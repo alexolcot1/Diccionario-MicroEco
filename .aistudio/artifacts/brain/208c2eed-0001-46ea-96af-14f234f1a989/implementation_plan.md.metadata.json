@@ -1,0 +1,6 @@
+{
+  "summary": "Plan de implementación integral para la app Android de Diccionario de Microeconomía basado en el programa de estudios de la Universidad Mariano Gálvez (Facultad de Ingeniería en Sistemas). Incluye búsqueda de términos por texto y por voz (reconocimiento de voz), Palabra del Día aleatoria diaria, explorador clasificado por los 3 módulos del curso, pantalla de detalle con definición académica, ejemplos prácticos de la vida real, fórmulas clave, persistencia de favoritos con Room y reproducción por audio.",
+  "updatedAt": "2026-09-30T04:12:08.184798163Z",
+  "requestFeedback": true,
+  "userFacing": true
+}

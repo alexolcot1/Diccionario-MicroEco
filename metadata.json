@@ -1,0 +1,6 @@
+{
+  "name": "MicroDiccionario",
+  "description": "Diccionario de Microeconomía UMG con búsqueda por voz, palabra del día, favoritos y ejemplos prácticos.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
