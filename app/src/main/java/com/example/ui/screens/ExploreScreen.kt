@@ -21,7 +21,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.data.model.EcoTerm
-import com.example.ui.components.ModuleFilterChips
 import com.example.ui.components.SearchBarWithMic
 import com.example.ui.components.TermCard
 
@@ -31,8 +30,6 @@ fun ExploreScreen(
     onSearchQueryChange: (String) -> Unit,
     onMicClick: () -> Unit,
     onClearSearch: () -> Unit,
-    selectedModule: String,
-    onSelectModule: (String) -> Unit,
     terms: List<EcoTerm>,
     onSelectTerm: (Int) -> Unit,
     onToggleFavorite: (EcoTerm) -> Unit,
@@ -43,7 +40,7 @@ fun ExploreScreen(
             .fillMaxSize()
             .testTag("explore_screen_content")
     ) {
-        // Sticky Header with Search and Module Filter
+        // Sticky Header with Search
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -58,11 +55,6 @@ fun ExploreScreen(
                 placeholderText = "Buscar en todo el diccionario..."
             )
 
-            ModuleFilterChips(
-                selectedModule = selectedModule,
-                onModuleSelect = onSelectModule
-            )
-
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -75,13 +67,11 @@ fun ExploreScreen(
                     color = MaterialTheme.colorScheme.primary
                 )
 
-                if (selectedModule != "Todos") {
-                    Text(
-                        text = "Filtrando por $selectedModule",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.outline
-                    )
-                }
+                Text(
+                    text = "Glosario A - Z",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.outline
+                )
             }
         }
 
@@ -100,11 +90,8 @@ fun ExploreScreen(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Spacer(modifier = Modifier.height(12.dp))
-                Button(onClick = {
-                    onClearSearch()
-                    onSelectModule("Todos")
-                }) {
-                    Text("Restablecer filtros")
+                Button(onClick = onClearSearch) {
+                    Text("Limpiar búsqueda")
                 }
             }
         } else {

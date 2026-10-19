@@ -23,9 +23,11 @@ class ExampleRobolectricTest {
   fun `verify syllabus terms loaded`() {
     val terms = com.example.data.local.PreloadedTerms.list
     org.junit.Assert.assertTrue(terms.isNotEmpty())
-    org.junit.Assert.assertTrue(terms.any { it.term == "Microeconomía" })
-    org.junit.Assert.assertTrue(terms.any { it.term.contains("Tasa Marginal de Sustitución") })
-    org.junit.Assert.assertTrue(terms.any { it.term.contains("Elasticidad") })
-    org.junit.Assert.assertTrue(terms.any { it.term == "Competencia Perfecta" })
+    org.junit.Assert.assertTrue(terms.any { it.term.equals("Microeconomía", ignoreCase = true) })
+    org.junit.Assert.assertTrue(terms.any { it.term.contains("Tasa marginal de sustitución", ignoreCase = true) })
+    org.junit.Assert.assertTrue(terms.any { it.term.contains("Elasticidad", ignoreCase = true) })
+    org.junit.Assert.assertTrue(terms.any { it.term.equals("Competencia perfecta", ignoreCase = true) })
+    org.junit.Assert.assertTrue(terms.any { it.term.equals("Abundancia", ignoreCase = true) })
+    org.junit.Assert.assertTrue(terms.any { it.term.equals("Utilidad", ignoreCase = true) })
   }
 }

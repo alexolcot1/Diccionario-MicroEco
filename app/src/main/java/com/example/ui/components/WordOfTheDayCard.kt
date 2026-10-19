@@ -172,13 +172,15 @@ fun WordOfTheDayCard(
                         )
                     }
 
-                    Spacer(modifier = Modifier.width(8.dp))
+                    if (term.week > 0) {
+                        Spacer(modifier = Modifier.width(8.dp))
 
-                    Text(
-                        text = "Semana ${term.week}",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+                        Text(
+                            text = "Semana ${term.week}",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(10.dp))

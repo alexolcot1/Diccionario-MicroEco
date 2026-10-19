@@ -159,20 +159,20 @@ fun TermCard(
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            // Module and week footer
+            // Footer
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = term.module,
+                    text = term.category.ifBlank { "Microeconomía" },
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.outline
                 )
 
                 Text(
-                    text = "Semana ${term.week}",
+                    text = "UMG • Microeconomía",
                     style = MaterialTheme.typography.labelSmall,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary

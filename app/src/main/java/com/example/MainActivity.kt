@@ -67,7 +67,6 @@ fun DictionaryApp(viewModel: DictionaryViewModel) {
     val currentTab by viewModel.currentTab.collectAsStateWithLifecycle()
     val selectedTerm by viewModel.selectedTerm.collectAsStateWithLifecycle()
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
-    val selectedModule by viewModel.selectedModule.collectAsStateWithLifecycle()
     val filteredTerms by viewModel.filteredTerms.collectAsStateWithLifecycle()
     val allTerms by viewModel.allTerms.collectAsStateWithLifecycle()
     val favoriteTerms by viewModel.favoriteTerms.collectAsStateWithLifecycle()
@@ -211,8 +210,6 @@ fun DictionaryApp(viewModel: DictionaryViewModel) {
                         onSearchQueryChange = { viewModel.onSearchQueryChanged(it) },
                         onMicClick = launchVoiceSearch,
                         onClearSearch = { viewModel.clearSearch() },
-                        selectedModule = selectedModule,
-                        onSelectModule = { viewModel.setModuleFilter(it) },
                         terms = filteredTerms,
                         onSelectTerm = { viewModel.openTermDetail(it) },
                         onToggleFavorite = { viewModel.toggleFavorite(it) },

@@ -62,4 +62,7 @@ interface EcoTermDao {
 
     @Query("DELETE FROM eco_terms WHERE id = :id")
     suspend fun deleteById(id: Int)
+
+    @Query("DELETE FROM eco_terms")
+    suspend fun deleteAll()
 }

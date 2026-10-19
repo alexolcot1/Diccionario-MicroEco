@@ -10,7 +10,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-@Database(entities = [EcoTerm::class], version = 2, exportSchema = false)
+@Database(entities = [EcoTerm::class], version = 3, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun ecoTermDao(): EcoTermDao
@@ -48,18 +48,20 @@ abstract class AppDatabase : RoomDatabase() {
 
             override fun onOpen(db: SupportSQLiteDatabase) {
                 super.onOpen(db)
-                // Ensure if empty on startup, populate it
                 INSTANCE?.let { database ->
                     scope.launch(Dispatchers.IO) {
-                        val count = database.ecoTermDao().getCount()
-                        if (count == 0) {
-                            populateDatabase(database.ecoTermDao())
+                        val dao = database.ecoTermDao()
+                        val count = dao.getCount()
+                        if (count != PreloadedTerms.list.size) {
+                            dao.deleteAll()
+                            dao.insertAll(PreloadedTerms.list)
                         }
                     }
                 }
             }
 
             suspend fun populateDatabase(dao: EcoTermDao) {
+                dao.deleteAll()
                 dao.insertAll(PreloadedTerms.list)
             }
         }

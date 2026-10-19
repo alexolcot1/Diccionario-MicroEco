@@ -66,10 +66,7 @@ import com.example.data.model.EcoTerm
 
 enum class StudyFilterType {
     ALL,
-    FAVORITES,
-    MODULE_I,
-    MODULE_II,
-    MODULE_III
+    FAVORITES
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -96,9 +93,6 @@ fun StudyFlashcardsScreen(
         when (selectedFilter) {
             StudyFilterType.ALL -> allTerms
             StudyFilterType.FAVORITES -> favoriteTerms
-            StudyFilterType.MODULE_I -> allTerms.filter { it.module.startsWith("Módulo I") || it.module.contains("I") }
-            StudyFilterType.MODULE_II -> allTerms.filter { it.module.startsWith("Módulo II") || it.module.contains("II") }
-            StudyFilterType.MODULE_III -> allTerms.filter { it.module.startsWith("Módulo III") || it.module.contains("III") }
         }
     }
 
@@ -192,36 +186,6 @@ fun StudyFlashcardsScreen(
                         selectedLabelColor = MaterialTheme.colorScheme.onTertiary
                     )
                 )
-
-                FilterChip(
-                    selected = selectedFilter == StudyFilterType.MODULE_I,
-                    onClick = {
-                        selectedFilter = StudyFilterType.MODULE_I
-                        currentIndex = 0
-                        isFlipped = false
-                    },
-                    label = { Text("Módulo I") }
-                )
-
-                FilterChip(
-                    selected = selectedFilter == StudyFilterType.MODULE_II,
-                    onClick = {
-                        selectedFilter = StudyFilterType.MODULE_II
-                        currentIndex = 0
-                        isFlipped = false
-                    },
-                    label = { Text("Módulo II") }
-                )
-
-                FilterChip(
-                    selected = selectedFilter == StudyFilterType.MODULE_III,
-                    onClick = {
-                        selectedFilter = StudyFilterType.MODULE_III
-                        currentIndex = 0
-                        isFlipped = false
-                    },
-                    label = { Text("Módulo III") }
-                )
             }
 
             if (activeTerms.isEmpty()) {
@@ -269,7 +233,7 @@ fun StudyFlashcardsScreen(
                         color = MaterialTheme.colorScheme.primary
                     )
                     Text(
-                        text = "${currentTerm.module} • Sem ${currentTerm.week}",
+                        text = currentTerm.category.ifBlank { "Microeconomía" },
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.outline
                     )

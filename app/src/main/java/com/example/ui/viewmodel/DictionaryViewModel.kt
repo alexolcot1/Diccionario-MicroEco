@@ -164,9 +164,6 @@ class DictionaryViewModel(application: Application) : AndroidViewModel(applicati
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
 
-    private val _selectedModule = MutableStateFlow("Todos")
-    val selectedModule: StateFlow<String> = _selectedModule.asStateFlow()
-
     private val _currentTab = MutableStateFlow(AppTab.HOME)
     val currentTab: StateFlow<AppTab> = _currentTab.asStateFlow()
 
@@ -185,23 +182,20 @@ class DictionaryViewModel(application: Application) : AndroidViewModel(applicati
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
 
-    // Filtered terms based on query and module selection
+    // Filtered terms based on search query
     val filteredTerms: StateFlow<List<EcoTerm>> = combine(
         allTerms,
-        _searchQuery,
-        _selectedModule
-    ) { terms, query, module ->
-        terms.filter { term ->
-            val matchesQuery = if (query.isBlank()) true else {
+        _searchQuery
+    ) { terms, query ->
+        if (query.isBlank()) {
+            terms
+        } else {
+            terms.filter { term ->
                 term.term.contains(query, ignoreCase = true) ||
                 term.summary.contains(query, ignoreCase = true) ||
                 term.meaning.contains(query, ignoreCase = true) ||
                 term.category.contains(query, ignoreCase = true)
             }
-            val matchesModule = if (module == "Todos") true else {
-                term.module.startsWith(module) || term.module.contains(module)
-            }
-            matchesQuery && matchesModule
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
@@ -236,10 +230,6 @@ class DictionaryViewModel(application: Application) : AndroidViewModel(applicati
 
     fun clearSearch() {
         _searchQuery.value = ""
-    }
-
-    fun setModuleFilter(module: String) {
-        _selectedModule.value = module
     }
 
     fun setTab(tab: AppTab) {
