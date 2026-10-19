@@ -22,7 +22,6 @@ import androidx.compose.material.icons.filled.Badge
 import androidx.compose.material.icons.filled.Group
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.School
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -103,23 +102,6 @@ fun AboutScreen(
                     modifier = Modifier.padding(18.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .size(54.dp)
-                            .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.primaryContainer),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.School,
-                            contentDescription = "Universidad",
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(30.dp)
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(10.dp))
-
                     Text(
                         text = "Universidad Mariano Gálvez de Guatemala",
                         style = MaterialTheme.typography.titleMedium,
