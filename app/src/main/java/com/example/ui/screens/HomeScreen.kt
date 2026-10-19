@@ -100,272 +100,231 @@ fun HomeScreen(
         )
     }
 
-    if (isSearching) {
-        // When searching, show search results list
-        LazyColumn(
-            modifier = modifier
+    Box(modifier = modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
                 .fillMaxSize()
-                .testTag("home_search_results_content"),
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
-            verticalArrangement = Arrangement.spacedBy(14.dp)
+                .padding(horizontal = 16.dp, vertical = 10.dp)
+                .testTag("home_screen_content"),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Header
-            item {
-                Card(
+            // App Header Banner (Persistent across search state)
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("umg_header_card"),
+                shape = RoundedCornerShape(20.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surface
+                ),
+                elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+            ) {
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .testTag("umg_header_card"),
-                    shape = RoundedCornerShape(20.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surface
-                    ),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+                        .padding(horizontal = 16.dp, vertical = 12.dp)
                 ) {
-                    Column(
+                    Text(
+                        text = "MicroDiccionario",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    Text(
+                        text = "Guía Didáctica UMG",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            // Search Bar with Voice Mic button (Persistent across search state - NEVER unmounted)
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = "Búsqueda Rápida",
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.padding(bottom = 6.dp)
+                )
+
+                SearchBarWithMic(
+                    query = searchQuery,
+                    onQueryChange = onSearchQueryChange,
+                    onMicClick = onMicClick,
+                    onClearClick = onClearSearch,
+                    placeholderText = "Escribe o usa el micrófono para buscar..."
+                )
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            // Dynamic section below the search bar
+            if (isSearching) {
+                // Search results list
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .testTag("home_search_results_content")
+                ) {
+                    Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 12.dp)
+                            .padding(vertical = 4.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "MicroDiccionario",
+                            text = "Resultados (${filteredTerms.size})",
                             style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.ExtraBold,
-                            color = MaterialTheme.colorScheme.primary
+                            fontWeight = FontWeight.Bold
                         )
                         Text(
-                            text = "Guía Didáctica UMG",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            text = "Toca para ver detalle",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.outline
                         )
                     }
-                }
-            }
 
-            // Search input
-            item {
-                Column {
-                    Text(
-                        text = "Búsqueda Rápida",
-                        style = MaterialTheme.typography.labelLarge,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.padding(bottom = 6.dp)
-                    )
+                    Spacer(modifier = Modifier.height(6.dp))
 
-                    SearchBarWithMic(
-                        query = searchQuery,
-                        onQueryChange = onSearchQueryChange,
-                        onMicClick = onMicClick,
-                        onClearClick = onClearSearch,
-                        placeholderText = "Escribe o usa el micrófono para buscar..."
-                    )
-                }
-            }
-
-            // Results count
-            item {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Resultados (${filteredTerms.size})",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        text = "Toca para ver detalle",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.outline
-                    )
-                }
-            }
-
-            if (filteredTerms.isEmpty()) {
-                item {
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 12.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
-                        )
-                    ) {
-                        Column(
+                    if (filteredTerms.isEmpty()) {
+                        Card(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(24.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Text(
-                                text = "No se encontraron coincidencias para \"$searchQuery\"",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                .padding(vertical = 12.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
                             )
-                            Spacer(modifier = Modifier.height(12.dp))
-                            Button(
-                                onClick = onClearSearch,
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = MaterialTheme.colorScheme.primary
-                                )
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(24.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
                             ) {
-                                Text("Limpiar búsqueda")
+                                Text(
+                                    text = "No se encontraron coincidencias para \"$searchQuery\"",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                                Spacer(modifier = Modifier.height(12.dp))
+                                Button(
+                                    onClick = onClearSearch,
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = MaterialTheme.colorScheme.primary
+                                    )
+                                ) {
+                                    Text("Limpiar búsqueda")
+                                }
+                            }
+                        }
+                    } else {
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalArrangement = Arrangement.spacedBy(10.dp),
+                            contentPadding = PaddingValues(bottom = 16.dp)
+                        ) {
+                            items(filteredTerms, key = { it.id }) { term ->
+                                TermCard(
+                                    term = term,
+                                    onClick = { onSelectTerm(term.id) },
+                                    onFavoriteToggle = { onToggleFavorite(term) }
+                                )
                             }
                         }
                     }
                 }
             } else {
-                items(filteredTerms, key = { it.id }) { term ->
-                    TermCard(
-                        term = term,
-                        onClick = { onSelectTerm(term.id) },
-                        onFavoriteToggle = { onToggleFavorite(term) }
-                    )
+                // Default Home Content (Logo, Word of the Day, etc.)
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .verticalScroll(rememberScrollState()),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    // Official UMG Shield Logo positioned centrally right above Palabra del Día
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 2.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.logo_umg),
+                            contentDescription = "Escudo Universidad Mariano Gálvez de Guatemala",
+                            modifier = Modifier
+                                .size(200.dp)
+                                .testTag("umg_shield_logo"),
+                            contentScale = ContentScale.Fit
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // Box holding Palabra del Día and Kebab button superimposed
+                    Box(
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        WordOfTheDayCard(
+                            term = wordOfTheDay,
+                            onCardClick = {
+                                if (!isKebabExpanded) {
+                                    wordOfTheDay?.let { onSelectTerm(it.id) }
+                                }
+                            },
+                            onShuffleClick = onShuffleWordOfTheDay,
+                            onFavoriteToggle = {
+                                wordOfTheDay?.let { onToggleFavorite(it) }
+                            }
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    // Floating Kebab Anchor Area (Bottom Right)
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(end = 4.dp, bottom = 10.dp),
+                        contentAlignment = Alignment.CenterEnd
+                    ) {
+                        // Empty spacer reserving height so layout doesn't jump
+                        Spacer(modifier = Modifier.size(54.dp))
+                    }
                 }
             }
         }
-    } else {
-        // Main Home Screen Container with Dimmed Backdrop Overlay
-        Box(modifier = modifier.fillMaxSize()) {
 
-            // Scrollable Content
-            Column(
+        // Dark Backdrop Scrim Overlay (dims background to highlight kebab options)
+        AnimatedVisibility(
+            visible = isKebabExpanded && !isSearching,
+            enter = fadeIn(),
+            exit = fadeOut(),
+            modifier = Modifier
+                .fillMaxSize()
+                .zIndex(2f)
+        ) {
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .padding(horizontal = 16.dp, vertical = 10.dp)
-                    .testTag("home_screen_content"),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                // App Header Banner
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .testTag("umg_header_card"),
-                    shape = RoundedCornerShape(20.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surface
-                    ),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 12.dp)
+                    .background(Color.Black.copy(alpha = 0.58f))
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null
                     ) {
-                        Text(
-                            text = "MicroDiccionario",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.ExtraBold,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                        Text(
-                            text = "Guía Didáctica UMG",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
+                        isKebabExpanded = false
                     }
-                }
+                    .testTag("kebab_backdrop_scrim")
+            )
+        }
 
-                Spacer(modifier = Modifier.height(10.dp))
-
-                // Search Bar with Voice Mic button
-                Column(modifier = Modifier.fillMaxWidth()) {
-                    Text(
-                        text = "Búsqueda Rápida",
-                        style = MaterialTheme.typography.labelLarge,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.padding(bottom = 6.dp)
-                    )
-
-                    SearchBarWithMic(
-                        query = searchQuery,
-                        onQueryChange = onSearchQueryChange,
-                        onMicClick = onMicClick,
-                        onClearClick = onClearSearch,
-                        placeholderText = "Escribe o usa el micrófono para buscar..."
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(10.dp))
-
-                // Official UMG Shield Logo positioned centrally right above Palabra del Día
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 2.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.logo_umg),
-                        contentDescription = "Escudo Universidad Mariano Gálvez de Guatemala",
-                        modifier = Modifier
-                            .size(200.dp)
-                            .testTag("umg_shield_logo"),
-                        contentScale = ContentScale.Fit
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // Box holding Palabra del Día and Kebab button superimposed
-                Box(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    WordOfTheDayCard(
-                        term = wordOfTheDay,
-                        onCardClick = {
-                            if (!isKebabExpanded) {
-                                wordOfTheDay?.let { onSelectTerm(it.id) }
-                            }
-                        },
-                        onShuffleClick = onShuffleWordOfTheDay,
-                        onFavoriteToggle = {
-                            wordOfTheDay?.let { onToggleFavorite(it) }
-                        }
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(6.dp))
-
-                // Floating Kebab Anchor Area (Bottom Right)
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(end = 4.dp, bottom = 10.dp),
-                    contentAlignment = Alignment.CenterEnd
-                ) {
-                    // Empty spacer reserving height so layout doesn't jump
-                    Spacer(modifier = Modifier.size(54.dp))
-                }
-            }
-
-            // Dark Backdrop Scrim Overlay (dims background to highlight kebab options)
-            AnimatedVisibility(
-                visible = isKebabExpanded,
-                enter = fadeIn(),
-                exit = fadeOut(),
-                modifier = Modifier
-                    .fillMaxSize()
-                    .zIndex(2f)
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color.Black.copy(alpha = 0.58f))
-                        .clickable(
-                            interactionSource = remember { MutableInteractionSource() },
-                            indication = null
-                        ) {
-                            isKebabExpanded = false
-                        }
-                        .testTag("kebab_backdrop_scrim")
-                )
-            }
-
-            // Kebab Menu Superimposed on top of the darkened background and over the lower right of the card
+        // Kebab Menu Superimposed on top of the darkened background and over the lower right of the card
+        if (!isSearching) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
