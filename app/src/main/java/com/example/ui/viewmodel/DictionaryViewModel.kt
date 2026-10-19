@@ -1,7 +1,10 @@
 package com.example.ui.viewmodel
 
 import android.app.Application
+import android.media.AudioAttributes
+import android.os.Bundle
 import android.speech.tts.TextToSpeech
+import android.speech.tts.Voice
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.data.local.AppDatabase
@@ -15,6 +18,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import com.example.ui.screens.StudyFilterType
 import java.util.Calendar
 import java.util.Locale
 
@@ -22,7 +26,8 @@ enum class AppTab {
     HOME,
     EXPLORE,
     FAVORITES,
-    STUDY
+    STUDY,
+    ABOUT
 }
 
 class DictionaryViewModel(application: Application) : AndroidViewModel(application), TextToSpeech.OnInitListener {
@@ -34,15 +39,119 @@ class DictionaryViewModel(application: Application) : AndroidViewModel(applicati
     init {
         val database = AppDatabase.getDatabase(application, viewModelScope)
         repository = DictionaryRepository(database.ecoTermDao())
-        tts = TextToSpeech(application, this)
+        initializeNaturalTts(application)
+    }
+
+    private fun initializeNaturalTts(application: Application) {
+        try {
+            // Check available TTS engines to prefer Google Speech Services (WaveNet / Neural voices)
+            val testTts = TextToSpeech(application) { /* no-op */ }
+            val engines = testTts.engines?.map { it.name } ?: emptyList()
+            testTts.shutdown()
+
+            if (engines.contains("com.google.android.tts")) {
+                tts = TextToSpeech(application, this, "com.google.android.tts")
+            } else {
+                tts = TextToSpeech(application, this)
+            }
+        } catch (_: Exception) {
+            tts = TextToSpeech(application, this)
+        }
     }
 
     override fun onInit(status: Int) {
         if (status == TextToSpeech.SUCCESS) {
-            val result = tts?.setLanguage(Locale("es", "ES"))
-            if (result != TextToSpeech.LANG_MISSING_DATA && result != TextToSpeech.LANG_NOT_SUPPORTED) {
-                _isTtsReady.value = true
+            configureTtsForNaturalLatinFemale()
+            _isTtsReady.value = true
+        }
+    }
+
+    fun configureTtsForLatinFemale() {
+        configureTtsForNaturalLatinFemale()
+    }
+
+    private fun configureTtsForNaturalLatinFemale() {
+        try {
+            val latinLocales = listOf(
+                Locale("es", "MX"),
+                Locale("es", "US"),
+                Locale("es", "419"),
+                Locale("es", "CO"),
+                Locale("es", "GT"),
+                Locale("es", "ES"),
+                Locale("es")
+            )
+            for (locale in latinLocales) {
+                if ((tts?.isLanguageAvailable(locale) ?: -1) >= TextToSpeech.LANG_AVAILABLE) {
+                    tts?.language = locale
+                    break
+                }
             }
+
+            // Optimize hardware DSP audio pipeline for speech synthesis clarity
+            val audioAttributes = AudioAttributes.Builder()
+                .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+                .setUsage(AudioAttributes.USAGE_ASSISTANCE_NAVIGATION_GUIDANCE)
+                .build()
+            tts?.setAudioAttributes(audioAttributes)
+
+            // Select highest quality natural/neural voice available
+            val allVoices = tts?.voices
+            if (!allVoices.isNullOrEmpty()) {
+                val availableSpanishVoices = allVoices.filter { v ->
+                    v.locale.language == "es" &&
+                    !(v.features?.contains(TextToSpeech.Engine.KEY_FEATURE_NOT_INSTALLED) == true)
+                }
+
+                if (availableSpanishVoices.isNotEmpty()) {
+                    val bestVoice = availableSpanishVoices.maxByOrNull { v ->
+                        var score = 0
+                        val nameLower = v.name.lowercase(Locale.ROOT)
+
+                        // 1. Prioritize Latin American regions (Mexico, US-LatAm, LatAm-419, Colombia, Guatemala)
+                        if (v.locale.country in listOf("MX", "US", "419", "CO", "GT")) score += 60
+
+                        // 2. High-quality tier from Android Voice API
+                        if (v.quality == Voice.QUALITY_VERY_HIGH) score += 50
+                        else if (v.quality == Voice.QUALITY_HIGH) score += 30
+
+                        // 3. Neural, WaveNet, or natural model names
+                        if (nameLower.contains("wavenet") || nameLower.contains("neural") || nameLower.contains("natural")) score += 45
+                        if (nameLower.contains("network")) score += 35 // Network-rendered voices have human-level prosody
+
+                        // 4. Female voice identifiers in Google TTS & Android engines
+                        if (nameLower.contains("female") || nameLower.contains("#female") ||
+                            nameLower.contains("-sfb") || nameLower.contains("-sfa") ||
+                            nameLower.contains("-sfd") || nameLower.contains("-sfg") ||
+                            nameLower.contains("mujer") || nameLower.contains("-eed")) {
+                            score += 65
+                        }
+
+                        // 5. Heavily penalize male identifiers
+                        if ((nameLower.contains("male") && !nameLower.contains("female")) ||
+                            nameLower.contains("#male") || nameLower.contains("-sfc") || nameLower.contains("-sfe")) {
+                            score -= 80
+                        }
+
+                        score
+                    }
+
+                    if (bestVoice != null) {
+                        tts?.voice = bestVoice
+                    }
+                }
+            }
+
+            // NATURAL HUMAN VOICE CONFIGURATION:
+            // Pitch 1.0f preserves the natural harmonic formants and resonance of human speech.
+            // (Previous pitch was artificially forced to 1.22f, creating metallic/robotic pitch-shift artifacts).
+            tts?.setPitch(1.0f)
+
+            // Speech rate 0.92f gives warm, clear, unhurried, natural articulation
+            tts?.setSpeechRate(0.92f)
+        } catch (_: Exception) {
+            tts?.setPitch(1.0f)
+            tts?.setSpeechRate(0.92f)
         }
     }
 
@@ -103,11 +212,18 @@ class DictionaryViewModel(application: Application) : AndroidViewModel(applicati
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
 
     // Study Flashcard Mode State
+    private val _studyFilter = MutableStateFlow(StudyFilterType.ALL)
+    val studyFilter: StateFlow<StudyFilterType> = _studyFilter.asStateFlow()
+
     private val _studyCardIndex = MutableStateFlow(0)
     val studyCardIndex: StateFlow<Int> = _studyCardIndex.asStateFlow()
 
     private val _isCardFlipped = MutableStateFlow(false)
     val isCardFlipped: StateFlow<Boolean> = _isCardFlipped.asStateFlow()
+
+    fun setStudyFilter(filter: StudyFilterType) {
+        _studyFilter.value = filter
+    }
 
     fun onSearchQueryChanged(newQuery: String) {
         _searchQuery.value = newQuery
@@ -128,6 +244,9 @@ class DictionaryViewModel(application: Application) : AndroidViewModel(applicati
 
     fun setTab(tab: AppTab) {
         _currentTab.value = tab
+        if (tab != AppTab.STUDY) {
+            _studyFilter.value = StudyFilterType.ALL
+        }
         // Clear term detail when navigating tabs
         _selectedTermId.value = null
     }
@@ -154,6 +273,27 @@ class DictionaryViewModel(application: Application) : AndroidViewModel(applicati
         _randomWordOffset.value = _randomWordOffset.value + 1
     }
 
+    fun addNewTerm(term: EcoTerm) {
+        viewModelScope.launch {
+            repository.addTerm(term)
+        }
+    }
+
+    fun updateTerm(term: EcoTerm) {
+        viewModelScope.launch {
+            repository.updateTerm(term)
+        }
+    }
+
+    fun deleteTerm(term: EcoTerm) {
+        viewModelScope.launch {
+            repository.deleteTerm(term)
+            if (_selectedTermId.value == term.id) {
+                _selectedTermId.value = null
+            }
+        }
+    }
+
     // Flashcards Navigation
     fun nextStudyCard(total: Int) {
         if (total > 0) {
@@ -176,8 +316,23 @@ class DictionaryViewModel(application: Application) : AndroidViewModel(applicati
     // Text to Speech
     fun speakTerm(term: EcoTerm) {
         if (_isTtsReady.value) {
+            configureTtsForNaturalLatinFemale()
             val textToSpeak = "${term.term}. ${term.meaning}. Ejemplo: ${term.example}"
-            tts?.speak(textToSpeak, TextToSpeech.QUEUE_FLUSH, null, "EcoTTS")
+            val params = Bundle().apply {
+                putFloat(TextToSpeech.Engine.KEY_PARAM_VOLUME, 1.0f)
+            }
+            tts?.speak(textToSpeak, TextToSpeech.QUEUE_FLUSH, params, "EcoTTS_${System.currentTimeMillis()}")
+        }
+    }
+
+    // Pronounce ONLY the word with natural Latin American female voice
+    fun speakTermPronunciation(term: EcoTerm) {
+        if (_isTtsReady.value) {
+            configureTtsForNaturalLatinFemale()
+            val params = Bundle().apply {
+                putFloat(TextToSpeech.Engine.KEY_PARAM_VOLUME, 1.0f)
+            }
+            tts?.speak(term.term, TextToSpeech.QUEUE_FLUSH, params, "EcoWordPronounceTTS_${System.currentTimeMillis()}")
         }
     }
 

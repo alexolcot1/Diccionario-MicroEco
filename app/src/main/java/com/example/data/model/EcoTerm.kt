@@ -18,5 +18,8 @@ data class EcoTerm(
     val bibliography: String = "Piloña Ortiz / Paul Samuelson",
     val isFavorite: Boolean = false,
     val viewCount: Int = 0,
-    val lastViewedTimestamp: Long = 0L
+    val lastViewedTimestamp: Long = 0L,
+    val partOfSpeech: String = "Sustantivo",
+    val synonyms: String? = null,
+    val antonyms: String? = null
 )

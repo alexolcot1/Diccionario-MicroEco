@@ -105,38 +105,41 @@ fun WordOfTheDayCard(
                         }
                     }
 
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        IconButton(
-                            onClick = onShuffleClick,
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        Box(
                             modifier = Modifier
-                                .size(36.dp)
+                                .size(32.dp)
                                 .clip(CircleShape)
-                                .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.7f))
-                                .testTag("word_of_day_shuffle_button")
+                                .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.85f))
+                                .clickable { onShuffleClick() }
+                                .testTag("word_of_day_shuffle_button"),
+                            contentAlignment = Alignment.Center
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Casino,
                                 contentDescription = "Cambiar a otra palabra aleatoria",
                                 tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(20.dp)
+                                modifier = Modifier.size(17.dp)
                             )
                         }
 
-                        Spacer(modifier = Modifier.width(6.dp))
-
-                        IconButton(
-                            onClick = onFavoriteToggle,
+                        Box(
                             modifier = Modifier
-                                .size(36.dp)
+                                .size(32.dp)
                                 .clip(CircleShape)
-                                .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.7f))
-                                .testTag("word_of_day_favorite_button")
+                                .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.85f))
+                                .clickable { onFavoriteToggle() }
+                                .testTag("word_of_day_favorite_button"),
+                            contentAlignment = Alignment.Center
                         ) {
                             Icon(
                                 imageVector = if (term.isFavorite) Icons.Default.Bookmark else Icons.Default.BookmarkBorder,
                                 contentDescription = if (term.isFavorite) "Quitar de favoritos" else "Guardar en favoritos",
                                 tint = if (term.isFavorite) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.size(20.dp)
+                                modifier = Modifier.size(17.dp)
                             )
                         }
                     }

@@ -15,7 +15,10 @@ object PreloadedTerms {
             module = "Módulo I: Introducción",
             week = 1,
             category = "Conceptos Fundamentales",
-            bibliography = "Piloña Ortiz (2013) / Samuelson (2016)"
+            bibliography = "Piloña Ortiz (2013) / Samuelson (2016)",
+            partOfSpeech = "Sustantivo femenino",
+            synonyms = "Teoría de los precios, análisis económico individual",
+            antonyms = "Macroeconomía"
         ),
         EcoTerm(
             id = 2,
@@ -27,7 +30,10 @@ object PreloadedTerms {
             module = "Módulo I: Introducción",
             week = 1,
             category = "Conceptos Fundamentales",
-            bibliography = "Samuelson, Paul (2016). Microeconomía con Aplicaciones"
+            bibliography = "Samuelson, Paul (2016). Microeconomía con Aplicaciones",
+            partOfSpeech = "Locución sustantiva masculina",
+            synonyms = "Costo alternativo, costo de renuncia, trade-off",
+            antonyms = "Beneficio absoluto"
         ),
         EcoTerm(
             id = 3,
@@ -39,7 +45,10 @@ object PreloadedTerms {
             module = "Módulo I: Introducción",
             week = 1,
             category = "Conceptos Fundamentales",
-            bibliography = "Piloña Ortiz, Gabriel Alfredo (2013)"
+            bibliography = "Piloña Ortiz, Gabriel Alfredo (2013)",
+            partOfSpeech = "Sustantivo femenino",
+            synonyms = "Insuficiencia, limitación de recursos, penuria",
+            antonyms = "Abundancia, plétora, excedente"
         ),
         EcoTerm(
             id = 4,
@@ -51,7 +60,10 @@ object PreloadedTerms {
             module = "Módulo I: Introducción",
             week = 2,
             category = "División de la Economía",
-            bibliography = "Hernández Andrade, Jorge Fidel (2010)"
+            bibliography = "Hernández Andrade, Jorge Fidel (2010)",
+            partOfSpeech = "Locución sustantiva femenina",
+            synonyms = "Economía descriptiva vs. economía prescriptiva",
+            antonyms = null
         ),
         EcoTerm(
             id = 5,
@@ -63,7 +75,10 @@ object PreloadedTerms {
             module = "Módulo I: Introducción",
             week = 3,
             category = "Teoría del Consumidor",
-            bibliography = "Piloña Ortiz (2013). Apuntes de Microeconomía"
+            bibliography = "Piloña Ortiz (2013). Apuntes de Microeconomía",
+            partOfSpeech = "Locución sustantiva femenina",
+            synonyms = "Beneficio marginal, satisfacción incremental",
+            antonyms = "Desutilidad marginal"
         ),
         EcoTerm(
             id = 6,
@@ -75,7 +90,10 @@ object PreloadedTerms {
             module = "Módulo I: Introducción",
             week = 3,
             category = "Teoría del Consumidor",
-            bibliography = "Piloña Ortiz (2013) / Samuelson (2016)"
+            bibliography = "Piloña Ortiz (2013) / Samuelson (2016)",
+            partOfSpeech = "Locución sustantiva femenina",
+            synonyms = "Primera ley de Gossen",
+            antonyms = "Rendimientos marginales crecientes"
         ),
         EcoTerm(
             id = 7,
@@ -87,7 +105,10 @@ object PreloadedTerms {
             module = "Módulo I: Introducción",
             week = 3,
             category = "Teoría del Consumidor",
-            bibliography = "Hernández Andrade, Jorge Fidel (2010)"
+            bibliography = "Hernández Andrade, Jorge Fidel (2010)",
+            partOfSpeech = "Locución sustantiva masculina plural",
+            synonyms = "Bienes conexos (alternativos y conjuntos)",
+            antonyms = "Bienes independientes"
         ),
         EcoTerm(
             id = 8,
@@ -99,7 +120,10 @@ object PreloadedTerms {
             module = "Módulo I: Introducción",
             week = 3,
             category = "Teoría del Consumidor",
-            bibliography = "Piloña Ortiz (2013). Apuntes de Microeconomía"
+            bibliography = "Piloña Ortiz (2013). Apuntes de Microeconomía",
+            partOfSpeech = "Locución sustantiva masculina",
+            synonyms = "Bien ultra-inferior de demanda inversa",
+            antonyms = "Bien ordinario, bien de Veblen"
         ),
         EcoTerm(
             id = 9,
@@ -111,7 +135,10 @@ object PreloadedTerms {
             module = "Módulo I: Introducción",
             week = 4,
             category = "Curvas de la Economía",
-            bibliography = "Piloña Ortiz (2013)"
+            bibliography = "Piloña Ortiz (2013)",
+            partOfSpeech = "Locución sustantiva masculina",
+            synonyms = "Punto de saciedad, nivel de plenitud del consumidor",
+            antonyms = "Insatisfacción, privación"
         ),
         EcoTerm(
             id = 10,
@@ -123,7 +150,10 @@ object PreloadedTerms {
             module = "Módulo I: Introducción",
             week = 5,
             category = "Curvas de Indiferencia",
-            bibliography = "Piloña Ortiz (2013) / Samuelson (2016)"
+            bibliography = "Piloña Ortiz (2013) / Samuelson (2016)",
+            partOfSpeech = "Locución sustantiva femenina plural",
+            synonyms = "Curvas de isoutilidad, líneas de igual satisfacción",
+            antonyms = null
         ),
         EcoTerm(
             id = 11,
@@ -135,7 +165,10 @@ object PreloadedTerms {
             module = "Módulo I: Introducción",
             week = 5,
             category = "Curvas de Indiferencia",
-            bibliography = "Piloña Ortiz (2013)"
+            bibliography = "Piloña Ortiz (2013)",
+            partOfSpeech = "Locución sustantiva femenina plural",
+            synonyms = "Axiomas de preferencias del consumidor",
+            antonyms = null
         ),
 
         // MÓDULO II - Tasas Marginales, Demanda y Oferta
@@ -149,7 +182,10 @@ object PreloadedTerms {
             module = "Módulo II: Tasas, Oferta y Demanda",
             week = 7,
             category = "Tasas Marginales",
-            bibliography = "Piloña Ortiz (2013) - Método aritmético y geométrico"
+            bibliography = "Piloña Ortiz (2013) - Método aritmético y geométrico",
+            partOfSpeech = "Locución sustantiva femenina",
+            synonyms = "Relación Marginal de Sustitución (RMS)",
+            antonyms = null
         ),
         EcoTerm(
             id = 13,
@@ -161,7 +197,10 @@ object PreloadedTerms {
             module = "Módulo II: Tasas, Oferta y Demanda",
             week = 8,
             category = "Líneas del Presupuesto",
-            bibliography = "Piloña Ortiz (2013) / Hernández Andrade (2010)"
+            bibliography = "Piloña Ortiz (2013) / Hernández Andrade (2010)",
+            partOfSpeech = "Locución sustantiva femenina",
+            synonyms = "Recta de balance, frontera de posibilidades de consumo",
+            antonyms = null
         ),
         EcoTerm(
             id = 14,
@@ -173,7 +212,10 @@ object PreloadedTerms {
             module = "Módulo II: Tasas, Oferta y Demanda",
             week = 8,
             category = "Teoría del Consumidor",
-            bibliography = "Piloña Ortiz (2013) / Samuelson (2016)"
+            bibliography = "Piloña Ortiz (2013) / Samuelson (2016)",
+            partOfSpeech = "Locución sustantiva masculina",
+            synonyms = "Canasta óptima, maximización del bienestar",
+            antonyms = "Desequilibrio presupuestario, ineficiencia de consumo"
         ),
         EcoTerm(
             id = 15,
@@ -185,7 +227,10 @@ object PreloadedTerms {
             module = "Módulo II: Tasas, Oferta y Demanda",
             week = 9,
             category = "Curvas Especiales",
-            bibliography = "Piloña Ortiz (2013). Apuntes de Microeconomía"
+            bibliography = "Piloña Ortiz (2013). Apuntes de Microeconomía",
+            partOfSpeech = "Locución sustantiva femenina",
+            synonyms = "Senda de expansión del consumo, senda renta-consumo",
+            antonyms = null
         ),
         EcoTerm(
             id = 16,
@@ -197,7 +242,10 @@ object PreloadedTerms {
             module = "Módulo II: Tasas, Oferta y Demanda",
             week = 9,
             category = "Curvas Especiales",
-            bibliography = "Piloña Ortiz (2013) / Ernst Engel"
+            bibliography = "Piloña Ortiz (2013) / Ernst Engel",
+            partOfSpeech = "Locución sustantiva femenina",
+            synonyms = "Relación demanda-renta de Engel",
+            antonyms = null
         ),
         EcoTerm(
             id = 17,
@@ -209,7 +257,10 @@ object PreloadedTerms {
             module = "Módulo II: Tasas, Oferta y Demanda",
             week = 10,
             category = "Curvas Especiales",
-            bibliography = "Piloña Ortiz (2013)"
+            bibliography = "Piloña Ortiz (2013)",
+            partOfSpeech = "Locución sustantiva femenina",
+            synonyms = "Trayectoria precio-demanda",
+            antonyms = null
         ),
         EcoTerm(
             id = 18,
@@ -221,7 +272,10 @@ object PreloadedTerms {
             module = "Módulo II: Tasas, Oferta y Demanda",
             week = 10,
             category = "Teoría del Consumidor",
-            bibliography = "Samuelson (2016) / Piloña Ortiz (2013)"
+            bibliography = "Samuelson (2016) / Piloña Ortiz (2013)",
+            partOfSpeech = "Locución sustantiva masculina",
+            synonyms = "Descomposición de Slutsky y Hicks",
+            antonyms = null
         ),
         EcoTerm(
             id = 19,
@@ -233,7 +287,10 @@ object PreloadedTerms {
             module = "Módulo II: Tasas, Oferta y Demanda",
             week = 11,
             category = "Demanda y Oferta",
-            bibliography = "Samuelson (2016). Microeconomía con Aplicaciones"
+            bibliography = "Samuelson (2016). Microeconomía con Aplicaciones",
+            partOfSpeech = "Locución sustantiva femenina",
+            synonyms = "Principio de la demanda decreciente",
+            antonyms = "Demanda inversa de Giffen"
         ),
         EcoTerm(
             id = 20,
@@ -245,7 +302,10 @@ object PreloadedTerms {
             module = "Módulo II: Tasas, Oferta y Demanda",
             week = 11,
             category = "Demanda y Oferta",
-            bibliography = "Piloña Ortiz (2013) / Samuelson (2016)"
+            bibliography = "Piloña Ortiz (2013) / Samuelson (2016)",
+            partOfSpeech = "Locución sustantiva femenina",
+            synonyms = "Principio de la oferta creciente",
+            antonyms = null
         ),
         EcoTerm(
             id = 21,
@@ -257,7 +317,10 @@ object PreloadedTerms {
             module = "Módulo II: Tasas, Oferta y Demanda",
             week = 11,
             category = "Conceptos Fundamentales",
-            bibliography = "Piloña Ortiz (2013) / Alfred Marshall"
+            bibliography = "Piloña Ortiz (2013) / Alfred Marshall",
+            partOfSpeech = "Locución adverbial latina",
+            synonyms = "En igualdad de condiciones restantes, todo lo demás constante",
+            antonyms = "Mutatis mutandis (cambiando lo que deba cambiarse)"
         ),
         EcoTerm(
             id = 22,
@@ -269,7 +332,10 @@ object PreloadedTerms {
             module = "Módulo II: Tasas, Oferta y Demanda",
             week = 11,
             category = "Demanda y Oferta",
-            bibliography = "Piloña Ortiz (2013) / Samuelson (2016)"
+            bibliography = "Piloña Ortiz (2013) / Samuelson (2016)",
+            partOfSpeech = "Locución sustantiva masculina",
+            synonyms = "Vaciado del mercado, balance oferta-demanda",
+            antonyms = "Desequilibrio de mercado, exceso de oferta o demanda"
         ),
         EcoTerm(
             id = 23,
@@ -281,7 +347,10 @@ object PreloadedTerms {
             module = "Módulo II: Tasas, Oferta y Demanda",
             week = 11,
             category = "Demanda y Oferta",
-            bibliography = "Samuelson (2016). Microeconomía"
+            bibliography = "Samuelson (2016). Microeconomía",
+            partOfSpeech = "Locución sustantiva masculina",
+            synonyms = "Renta del consumidor, ganancia del comprador",
+            antonyms = "Pérdida social irrecuperable"
         ),
 
         // MÓDULO III - Elasticidad, Producción y Mercados
@@ -295,7 +364,10 @@ object PreloadedTerms {
             module = "Módulo III: Elasticidad y Mercado",
             week = 13,
             category = "Elasticidad",
-            bibliography = "Piloña Ortiz (2013) / Samuelson (2016)"
+            bibliography = "Piloña Ortiz (2013) / Samuelson (2016)",
+            partOfSpeech = "Locución sustantiva femenina",
+            synonyms = "Sensibilidad precio de la demanda",
+            antonyms = "Rigidez perfecta de demanda"
         ),
         EcoTerm(
             id = 25,
@@ -307,7 +379,10 @@ object PreloadedTerms {
             module = "Módulo III: Elasticidad y Mercado",
             week = 13,
             category = "Elasticidad",
-            bibliography = "Piloña Ortiz (2013). Apuntes de Microeconomía"
+            bibliography = "Piloña Ortiz (2013). Apuntes de Microeconomía",
+            partOfSpeech = "Locución sustantiva femenina",
+            synonyms = "Sensibilidad renta de la demanda",
+            antonyms = null
         ),
         EcoTerm(
             id = 26,
@@ -319,7 +394,10 @@ object PreloadedTerms {
             module = "Módulo III: Elasticidad y Mercado",
             week = 13,
             category = "Elasticidad",
-            bibliography = "Hernández Andrade (2010)"
+            bibliography = "Hernández Andrade (2010)",
+            partOfSpeech = "Locución sustantiva femenina",
+            synonyms = "Sensibilidad interbienes de la demanda",
+            antonyms = null
         ),
         EcoTerm(
             id = 27,
@@ -331,7 +409,10 @@ object PreloadedTerms {
             module = "Módulo III: Elasticidad y Mercado",
             week = 15,
             category = "Teoría de la Producción",
-            bibliography = "Piloña Ortiz (2013) / Samuelson (2016)"
+            bibliography = "Piloña Ortiz (2013) / Samuelson (2016)",
+            partOfSpeech = "Locución sustantiva femenina",
+            synonyms = "Ecuación técnica de producción, modelo input-output",
+            antonyms = null
         ),
         EcoTerm(
             id = 28,
@@ -343,7 +424,10 @@ object PreloadedTerms {
             module = "Módulo III: Elasticidad y Mercado",
             week = 15,
             category = "Teoría de la Producción",
-            bibliography = "Piloña Ortiz (2013)"
+            bibliography = "Piloña Ortiz (2013)",
+            partOfSpeech = "Locución sustantiva masculina",
+            synonyms = "Rendimiento marginal, productividad marginal del trabajo",
+            antonyms = null
         ),
         EcoTerm(
             id = 29,
@@ -355,7 +439,10 @@ object PreloadedTerms {
             module = "Módulo III: Elasticidad y Mercado",
             week = 15,
             category = "Teoría de la Producción",
-            bibliography = "Piloña Ortiz (2013) / David Ricardo"
+            bibliography = "Piloña Ortiz (2013) / David Ricardo",
+            partOfSpeech = "Locución sustantiva femenina",
+            synonyms = "Ley de las proporciones variables, ley de Ricardo",
+            antonyms = "Rendimientos crecientes a escala"
         ),
         EcoTerm(
             id = 30,
@@ -367,7 +454,10 @@ object PreloadedTerms {
             module = "Módulo III: Elasticidad y Mercado",
             week = 15,
             category = "Teoría de la Producción",
-            bibliography = "Piloña Ortiz (2013). Apuntes de Microeconomía"
+            bibliography = "Piloña Ortiz (2013). Apuntes de Microeconomía",
+            partOfSpeech = "Locución sustantiva femenina plural",
+            synonyms = "Fases de rendimiento del insumo variable",
+            antonyms = null
         ),
         EcoTerm(
             id = 31,
@@ -379,7 +469,10 @@ object PreloadedTerms {
             module = "Módulo III: Elasticidad y Mercado",
             week = 16,
             category = "Estructuras de Mercado",
-            bibliography = "Kinnear Thomas (4ª Ed.) / Piloña Ortiz (2013)"
+            bibliography = "Kinnear Thomas (4ª Ed.) / Piloña Ortiz (2013)",
+            partOfSpeech = "Locución sustantiva masculina",
+            synonyms = "Plaza de intercambio y partición de mercado objetivo",
+            antonyms = "Mercado masivo indiferenciado"
         ),
         EcoTerm(
             id = 32,
@@ -391,7 +484,10 @@ object PreloadedTerms {
             module = "Módulo III: Elasticidad y Mercado",
             week = 16,
             category = "Estructuras de Mercado",
-            bibliography = "Samuelson (2016) / Piloña Ortiz (2013)"
+            bibliography = "Samuelson (2016) / Piloña Ortiz (2013)",
+            partOfSpeech = "Locución sustantiva femenina",
+            synonyms = "Mercado puramente competitivo, libre concurrencia",
+            antonyms = "Competencia imperfecta, monopolio, oligopolio"
         ),
         EcoTerm(
             id = 33,
@@ -403,7 +499,10 @@ object PreloadedTerms {
             module = "Módulo III: Elasticidad y Mercado",
             week = 16,
             category = "Estructuras de Mercado",
-            bibliography = "Piloña Ortiz (2013) / Samuelson (2016)"
+            bibliography = "Piloña Ortiz (2013) / Samuelson (2016)",
+            partOfSpeech = "Sustantivo masculino",
+            synonyms = "Oferente único, mercado exclusivo, concentración total",
+            antonyms = "Competencia perfecta, monopsonio (comprador único)"
         ),
         EcoTerm(
             id = 34,
@@ -415,7 +514,10 @@ object PreloadedTerms {
             module = "Módulo III: Elasticidad y Mercado",
             week = 16,
             category = "Estructuras de Mercado",
-            bibliography = "Piloña Ortiz (2013) / Samuelson (2016)"
+            bibliography = "Piloña Ortiz (2013) / Samuelson (2016)",
+            partOfSpeech = "Sustantivo masculino",
+            synonyms = "Mercado oligopólico, duopolio, cártel empresarial",
+            antonyms = "Competencia perfecta"
         ),
         EcoTerm(
             id = 35,
@@ -427,7 +529,10 @@ object PreloadedTerms {
             module = "Módulo III: Elasticidad y Mercado",
             week = 16,
             category = "Estructuras de Mercado",
-            bibliography = "Edward Chamberlin / Piloña Ortiz (2013)"
+            bibliography = "Edward Chamberlin / Piloña Ortiz (2013)",
+            partOfSpeech = "Locución sustantiva femenina",
+            synonyms = "Competencia con bienes diferenciados, competencia imperfecta",
+            antonyms = "Competencia perfecta (productos homogéneos)"
         ),
         EcoTerm(
             id = 36,
@@ -439,7 +544,10 @@ object PreloadedTerms {
             module = "Módulo III: Elasticidad y Mercado",
             week = 15,
             category = "Teoría de la Producción",
-            bibliography = "Piloña Ortiz (2013). Apuntes de Microeconomía"
+            bibliography = "Piloña Ortiz (2013). Apuntes de Microeconomía",
+            partOfSpeech = "Locución sustantiva mixta",
+            synonyms = "Líneas de igual producción y costo presupuestario de factores",
+            antonyms = null
         )
     )
 }

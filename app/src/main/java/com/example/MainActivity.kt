@@ -15,12 +15,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AutoAwesome
-import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.MenuBook
 import androidx.compose.material.icons.outlined.AutoAwesome
-import androidx.compose.material.icons.outlined.BookmarkBorder
 import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.MenuBook
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -33,15 +33,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.ui.screens.AboutScreen
 import com.example.ui.screens.ExploreScreen
 import com.example.ui.screens.FavoritesScreen
 import com.example.ui.screens.HomeScreen
 import com.example.ui.screens.StudyFlashcardsScreen
+import com.example.ui.screens.StudyFilterType
 import com.example.ui.screens.WordDetailScreen
 import com.example.ui.theme.MyApplicationTheme
 import com.example.ui.viewmodel.AppTab
 import com.example.ui.viewmodel.DictionaryViewModel
-import java.util.Locale
 
 class MainActivity : ComponentActivity() {
 
@@ -71,10 +72,7 @@ fun DictionaryApp(viewModel: DictionaryViewModel) {
     val allTerms by viewModel.allTerms.collectAsStateWithLifecycle()
     val favoriteTerms by viewModel.favoriteTerms.collectAsStateWithLifecycle()
     val wordOfTheDay by viewModel.wordOfTheDay.collectAsStateWithLifecycle()
-
-    // Flashcard state
-    val studyCardIndex by viewModel.studyCardIndex.collectAsStateWithLifecycle()
-    val isCardFlipped by viewModel.isCardFlipped.collectAsStateWithLifecycle()
+    val studyFilter by viewModel.studyFilter.collectAsStateWithLifecycle()
 
     // Android Speech Recognition Launcher
     val speechLauncher = rememberLauncherForActivityResult(
@@ -118,7 +116,9 @@ fun DictionaryApp(viewModel: DictionaryViewModel) {
             term = selectedTerm,
             onBack = { viewModel.closeTermDetail() },
             onToggleFavorite = { viewModel.toggleFavorite(it) },
-            onSpeakTerm = { viewModel.speakTerm(it) }
+            onPronounceWord = { viewModel.speakTermPronunciation(it) },
+            onUpdateTerm = { viewModel.updateTerm(it) },
+            onDeleteTerm = { viewModel.deleteTerm(it) }
         )
     } else {
         Scaffold(
@@ -156,19 +156,6 @@ fun DictionaryApp(viewModel: DictionaryViewModel) {
                     )
 
                     NavigationBarItem(
-                        selected = currentTab == AppTab.FAVORITES,
-                        onClick = { viewModel.setTab(AppTab.FAVORITES) },
-                        icon = {
-                            Icon(
-                                imageVector = if (currentTab == AppTab.FAVORITES) Icons.Filled.Bookmark else Icons.Outlined.BookmarkBorder,
-                                contentDescription = "Favoritos"
-                            )
-                        },
-                        label = { Text("Favoritos") },
-                        modifier = Modifier.testTag("nav_tab_favorites")
-                    )
-
-                    NavigationBarItem(
                         selected = currentTab == AppTab.STUDY,
                         onClick = { viewModel.setTab(AppTab.STUDY) },
                         icon = {
@@ -179,6 +166,19 @@ fun DictionaryApp(viewModel: DictionaryViewModel) {
                         },
                         label = { Text("Repaso") },
                         modifier = Modifier.testTag("nav_tab_study")
+                    )
+
+                    NavigationBarItem(
+                        selected = currentTab == AppTab.ABOUT,
+                        onClick = { viewModel.setTab(AppTab.ABOUT) },
+                        icon = {
+                            Icon(
+                                imageVector = if (currentTab == AppTab.ABOUT) Icons.Filled.Info else Icons.Outlined.Info,
+                                contentDescription = "Acerca"
+                            )
+                        },
+                        label = { Text("Acerca") },
+                        modifier = Modifier.testTag("nav_tab_about")
                     )
                 }
             }
@@ -200,6 +200,7 @@ fun DictionaryApp(viewModel: DictionaryViewModel) {
                         onExploreAllClick = { viewModel.setTab(AppTab.EXPLORE) },
                         onOpenFavoritesClick = { viewModel.setTab(AppTab.FAVORITES) },
                         onOpenStudyClick = { viewModel.setTab(AppTab.STUDY) },
+                        onAddNewTerm = { viewModel.addNewTerm(it) },
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
@@ -224,29 +225,30 @@ fun DictionaryApp(viewModel: DictionaryViewModel) {
                         favoriteTerms = favoriteTerms,
                         onSelectTerm = { viewModel.openTermDetail(it) },
                         onToggleFavorite = { viewModel.toggleFavorite(it) },
-                        onStartStudy = { viewModel.setTab(AppTab.STUDY) },
+                        onStartStudy = {
+                            viewModel.setStudyFilter(StudyFilterType.FAVORITES)
+                            viewModel.setTab(AppTab.STUDY)
+                        },
                         onExploreTerms = { viewModel.setTab(AppTab.EXPLORE) },
+                        onBack = { viewModel.setTab(AppTab.HOME) },
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
 
                 AppTab.STUDY -> {
                     StudyFlashcardsScreen(
-                        terms = if (favoriteTerms.isNotEmpty()) favoriteTerms else allTerms,
-                        currentIndex = studyCardIndex,
-                        isFlipped = isCardFlipped,
-                        onFlip = { viewModel.flipCard() },
-                        onNext = {
-                            val activeList = if (favoriteTerms.isNotEmpty()) favoriteTerms else allTerms
-                            viewModel.nextStudyCard(activeList.size)
-                        },
-                        onPrev = {
-                            val activeList = if (favoriteTerms.isNotEmpty()) favoriteTerms else allTerms
-                            viewModel.prevStudyCard(activeList.size)
-                        },
+                        allTerms = allTerms,
+                        favoriteTerms = favoriteTerms,
+                        initialFilter = studyFilter,
                         onToggleFavorite = { viewModel.toggleFavorite(it) },
                         onSpeakTerm = { viewModel.speakTerm(it) },
                         onBack = { viewModel.setTab(AppTab.HOME) },
+                        modifier = Modifier.padding(innerPadding)
+                    )
+                }
+
+                AppTab.ABOUT -> {
+                    AboutScreen(
                         modifier = Modifier.padding(innerPadding)
                     )
                 }

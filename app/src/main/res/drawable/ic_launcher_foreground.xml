@@ -1,53 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="108dp"
-    android:height="108dp"
-    android:viewportWidth="108"
-    android:viewportHeight="108">
-    <group
-        android:pivotX="54"
-        android:pivotY="54">
-        <!-- Book Base Layer -->
-        <path
-            android:fillColor="#E8EEF5"
-            android:pathData="M27,42 C27,39 31,37 38,37 L52,37 C53,37 54,38 54,39 L54,74 C54,73 52,72 49,72 L35,72 C29,72 27,75 27,75 Z" />
-        <path
-            android:fillColor="#F4F8FC"
-            android:pathData="M81,42 C81,39 77,37 70,37 L56,37 C55,37 54,38 54,39 L54,74 C54,73 56,72 59,72 L73,72 C79,72 81,75 81,75 Z" />
-        
-        <!-- Book Spine & Binding Details -->
-        <path
-            android:fillColor="#2C5282"
-            android:pathData="M52,37 L56,37 L56,75 L52,75 Z" />
-
-        <!-- Bookmark ribbon in Emerald -->
-        <path
-            android:fillColor="#00C896"
-            android:pathData="M51,36 L57,36 L57,48 L54,45 L51,48 Z" />
-
-        <!-- Economic Demand & Supply Curves over book -->
-        <!-- Demand curve (downward sloping) in Amber -->
-        <path
-            android:fillColor="#00000000"
-            android:pathData="M34,45 Q44,53 54,55 Q64,57 74,65"
-            android:strokeColor="#FFB300"
-            android:strokeLineCap="round"
-            android:strokeWidth="3.2" />
-
-        <!-- Supply curve (upward sloping) in Emerald -->
-        <path
-            android:fillColor="#00000000"
-            android:pathData="M34,65 Q44,57 54,55 Q64,53 74,45"
-            android:strokeColor="#00C896"
-            android:strokeLineCap="round"
-            android:strokeWidth="3.2" />
-
-        <!-- Equilibrium Market Point -->
-        <path
-            android:fillColor="#FFFFFF"
-            android:pathData="M54,55 m-3.5,0 a3.5,3.5 0 1,0 7,0 a3.5,3.5 0 1,0 -7,0" />
-        <path
-            android:fillColor="#0B1A2A"
-            android:pathData="M54,55 m-1.8,0 a1.8,1.8 0 1,0 3.6,0 a1.8,1.8 0 1,0 -3.6,0" />
-    </group>
-</vector>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:width="72dp"
+        android:height="72dp"
+        android:drawable="@drawable/logo_umg"
+        android:gravity="center" />
+</layer-list>

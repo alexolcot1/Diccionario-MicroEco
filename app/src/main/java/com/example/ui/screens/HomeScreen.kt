@@ -1,8 +1,14 @@
 package com.example.ui.screens
 
+import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,31 +23,38 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.filled.AutoAwesome
-import androidx.compose.material.icons.filled.Book
-import androidx.compose.material.icons.filled.Bookmark
-import androidx.compose.material.icons.filled.MenuBook
-import androidx.compose.material.icons.filled.School
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
+import com.example.R
 import com.example.data.model.EcoTerm
+import com.example.ui.components.AddTermDialog
+import com.example.ui.components.KebabFloatingMenu
 import com.example.ui.components.SearchBarWithMic
 import com.example.ui.components.TermCard
 import com.example.ui.components.WordOfTheDayCard
@@ -62,92 +75,94 @@ fun HomeScreen(
     onExploreAllClick: () -> Unit,
     onOpenFavoritesClick: () -> Unit,
     onOpenStudyClick: () -> Unit,
+    onAddNewTerm: (EcoTerm) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
     val isSearching = searchQuery.trim().isNotEmpty()
+    var showAddDialog by remember { mutableStateOf(false) }
+    var isKebabExpanded by remember { mutableStateOf(false) }
 
-    LazyColumn(
-        modifier = modifier
-            .fillMaxSize()
-            .testTag("home_screen_content"),
-        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        // App Header Banner
-        item {
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .testTag("umg_header_card"),
-                shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surface
-                ),
-                elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
-            ) {
-                Row(
+    // Dismiss kebab menu on back button press
+    BackHandler(enabled = isKebabExpanded) {
+        isKebabExpanded = false
+    }
+
+    if (showAddDialog) {
+        AddTermDialog(
+            onDismiss = { showAddDialog = false },
+            onSaveTerm = { newTerm ->
+                onAddNewTerm(newTerm)
+                showAddDialog = false
+                isKebabExpanded = false
+                Toast.makeText(context, "¡Palabra \"${newTerm.term}\" agregada!", Toast.LENGTH_SHORT).show()
+            }
+        )
+    }
+
+    if (isSearching) {
+        // When searching, show search results list
+        LazyColumn(
+            modifier = modifier
+                .fillMaxSize()
+                .testTag("home_search_results_content"),
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
+            verticalArrangement = Arrangement.spacedBy(14.dp)
+        ) {
+            // Header
+            item {
+                Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                        .testTag("umg_header_card"),
+                    shape = RoundedCornerShape(20.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surface
+                    ),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
                 ) {
-                    Box(
+                    Column(
                         modifier = Modifier
-                            .size(48.dp)
-                            .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)),
-                        contentAlignment = Alignment.Center
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 12.dp)
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.School,
-                            contentDescription = "Universidad Mariano Gálvez",
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(28.dp)
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.width(14.dp))
-
-                    Column {
                         Text(
                             text = "MicroDiccionario",
-                            style = MaterialTheme.typography.titleLarge,
+                            style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.ExtraBold,
                             color = MaterialTheme.colorScheme.primary
                         )
                         Text(
-                            text = "Guía Didáctica UMG • Ingeniería en Sistemas",
+                            text = "Guía Didáctica UMG",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
             }
-        }
 
-        // Search Bar with Voice Mic button (Requested)
-        item {
-            Column {
-                Text(
-                    text = "Búsqueda Rápida",
-                    style = MaterialTheme.typography.labelLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.padding(bottom = 6.dp)
-                )
+            // Search input
+            item {
+                Column {
+                    Text(
+                        text = "Búsqueda Rápida",
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.padding(bottom = 6.dp)
+                    )
 
-                SearchBarWithMic(
-                    query = searchQuery,
-                    onQueryChange = onSearchQueryChange,
-                    onMicClick = onMicClick,
-                    onClearClick = onClearSearch,
-                    placeholderText = "Escribe o usa el micrófono para buscar..."
-                )
+                    SearchBarWithMic(
+                        query = searchQuery,
+                        onQueryChange = onSearchQueryChange,
+                        onMicClick = onMicClick,
+                        onClearClick = onClearSearch,
+                        placeholderText = "Escribe o usa el micrófono para buscar..."
+                    )
+                }
             }
-        }
 
-        // Live Search Results (if searching)
-        if (isSearching) {
+            // Results count
             item {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -188,14 +203,14 @@ fun HomeScreen(
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
-                            Spacer(modifier = Modifier.height(8.dp))
+                            Spacer(modifier = Modifier.height(12.dp))
                             Button(
                                 onClick = onClearSearch,
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = MaterialTheme.colorScheme.primary
                                 )
                             ) {
-                                Text("Ver todas las palabras")
+                                Text("Limpiar búsqueda")
                             }
                         }
                     }
@@ -209,221 +224,169 @@ fun HomeScreen(
                     )
                 }
             }
-        } else {
-            // Word of the Day Button / Card (Requested)
-            item {
-                WordOfTheDayCard(
-                    term = wordOfTheDay,
-                    onCardClick = {
-                        wordOfTheDay?.let { onSelectTerm(it.id) }
-                    },
-                    onShuffleClick = onShuffleWordOfTheDay,
-                    onFavoriteToggle = {
-                        wordOfTheDay?.let { onToggleFavorite(it) }
-                    }
-                )
-            }
+        }
+    } else {
+        // Main Home Screen Container with Dimmed Backdrop Overlay
+        Box(modifier = modifier.fillMaxSize()) {
 
-            // Quick Stats / Shortcuts row
-            item {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    Card(
-                        modifier = Modifier
-                            .weight(1f)
-                            .clip(RoundedCornerShape(16.dp))
-                            .clickable { onOpenFavoritesClick() }
-                            .testTag("home_favorites_shortcut"),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surface
-                        )
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(12.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Bookmark,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.tertiary,
-                                modifier = Modifier.size(22.dp)
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Column {
-                                Text(
-                                    text = "$favoriteCount Guardados",
-                                    style = MaterialTheme.typography.labelMedium,
-                                    fontWeight = FontWeight.Bold
-                                )
-                                Text(
-                                    text = "Mis Favoritos",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
-                        }
-                    }
-
-                    Card(
-                        modifier = Modifier
-                            .weight(1f)
-                            .clip(RoundedCornerShape(16.dp))
-                            .clickable { onOpenStudyClick() }
-                            .testTag("home_study_shortcut"),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surface
-                        )
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(12.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.AutoAwesome,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.secondary,
-                                modifier = Modifier.size(22.dp)
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Column {
-                                Text(
-                                    text = "Modo Repaso",
-                                    style = MaterialTheme.typography.labelMedium,
-                                    fontWeight = FontWeight.Bold
-                                )
-                                Text(
-                                    text = "Para Parciales",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-
-            // Prominent button to explore all words (Requested)
-            item {
+            // Scrollable Content
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 16.dp, vertical = 10.dp)
+                    .testTag("home_screen_content"),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                // App Header Banner
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(20.dp))
-                        .clickable { onExploreAllClick() }
-                        .testTag("explore_all_button"),
+                        .testTag("umg_header_card"),
                     shape = RoundedCornerShape(20.dp),
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.secondaryContainer
-                    )
+                        containerColor = MaterialTheme.colorScheme.surface
+                    ),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
                 ) {
-                    Row(
+                    Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(20.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                            .padding(horizontal = 16.dp, vertical = 12.dp)
                     ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Box(
-                                modifier = Modifier
-                                    .size(44.dp)
-                                    .clip(CircleShape)
-                                    .background(MaterialTheme.colorScheme.secondary),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.MenuBook,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.onSecondary,
-                                    modifier = Modifier.size(24.dp)
-                                )
-                            }
-
-                            Spacer(modifier = Modifier.width(14.dp))
-
-                            Column {
-                                Text(
-                                    text = "Explorar Todas las Palabras",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.onSecondaryContainer
-                                )
-                                Text(
-                                    text = "$totalTermsCount conceptos de la guía didáctica",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.8f)
-                                )
-                            }
-                        }
-
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                            contentDescription = "Ir a explorar",
-                            tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                            modifier = Modifier.size(24.dp)
+                        Text(
+                            text = "MicroDiccionario",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        Text(
+                            text = "Guía Didáctica UMG",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                // Search Bar with Voice Mic button
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        text = "Búsqueda Rápida",
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.padding(bottom = 6.dp)
+                    )
+
+                    SearchBarWithMic(
+                        query = searchQuery,
+                        onQueryChange = onSearchQueryChange,
+                        onMicClick = onMicClick,
+                        onClearClick = onClearSearch,
+                        placeholderText = "Escribe o usa el micrófono para buscar..."
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                // Official UMG Shield Logo positioned centrally right above Palabra del Día
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 2.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.logo_umg),
+                        contentDescription = "Escudo Universidad Mariano Gálvez de Guatemala",
+                        modifier = Modifier
+                            .size(200.dp)
+                            .testTag("umg_shield_logo"),
+                        contentScale = ContentScale.Fit
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Box holding Palabra del Día and Kebab button superimposed
+                Box(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    WordOfTheDayCard(
+                        term = wordOfTheDay,
+                        onCardClick = {
+                            if (!isKebabExpanded) {
+                                wordOfTheDay?.let { onSelectTerm(it.id) }
+                            }
+                        },
+                        onShuffleClick = onShuffleWordOfTheDay,
+                        onFavoriteToggle = {
+                            wordOfTheDay?.let { onToggleFavorite(it) }
+                        }
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(6.dp))
+
+                // Floating Kebab Anchor Area (Bottom Right)
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(end = 4.dp, bottom = 10.dp),
+                    contentAlignment = Alignment.CenterEnd
+                ) {
+                    // Empty spacer reserving height so layout doesn't jump
+                    Spacer(modifier = Modifier.size(54.dp))
+                }
             }
 
-            // Quick Syllabus Modules Overview
-            item {
-                Column {
-                    Text(
-                        text = "Módulos de Microeconomía UMG",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    val modulesList = listOf(
-                        Triple("Módulo I", "Introducción & Consumidor", "Semanas 1 a 5"),
-                        Triple("Módulo II", "Tasas Marginales, Oferta y Demanda", "Semanas 7 a 11"),
-                        Triple("Módulo III", "Elasticidades, Producción y Mercados", "Semanas 13 a 17")
-                    )
-
-                    modulesList.forEach { (modCode, modTitle, modWeeks) ->
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 4.dp)
-                                .clip(RoundedCornerShape(12.dp))
-                                .clickable { onExploreAllClick() },
-                            colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.surface
-                            )
+            // Dark Backdrop Scrim Overlay (dims background to highlight kebab options)
+            AnimatedVisibility(
+                visible = isKebabExpanded,
+                enter = fadeIn(),
+                exit = fadeOut(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .zIndex(2f)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(alpha = 0.58f))
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null
                         ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(14.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Column(modifier = Modifier.weight(1f)) {
-                                    Text(
-                                        text = "$modCode • $modTitle",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        fontWeight = FontWeight.SemiBold
-                                    )
-                                    Text(
-                                        text = modWeeks,
-                                        style = MaterialTheme.typography.labelSmall,
-                                        color = MaterialTheme.colorScheme.outline
-                                    )
-                                }
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.primary,
-                                    modifier = Modifier.size(18.dp)
-                                )
-                            }
+                            isKebabExpanded = false
                         }
-                    }
-                }
+                        .testTag("kebab_backdrop_scrim")
+                )
+            }
+
+            // Kebab Menu Superimposed on top of the darkened background and over the lower right of the card
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp, vertical = 10.dp)
+                    .zIndex(3f),
+                contentAlignment = Alignment.BottomEnd
+            ) {
+                KebabFloatingMenu(
+                    isExpanded = isKebabExpanded,
+                    onToggleExpanded = { isKebabExpanded = !isKebabExpanded },
+                    favoriteCount = favoriteCount,
+                    onOpenFavorites = {
+                        isKebabExpanded = false
+                        onOpenFavoritesClick()
+                    },
+                    onOpenAddWord = {
+                        isKebabExpanded = false
+                        showAddDialog = true
+                    },
+                    modifier = Modifier.padding(bottom = 6.dp)
+                )
             }
         }
     }

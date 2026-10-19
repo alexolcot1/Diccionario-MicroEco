@@ -86,6 +86,21 @@ fun TermCard(
                             )
                         }
 
+                        Spacer(modifier = Modifier.width(6.dp))
+
+                        Surface(
+                            shape = RoundedCornerShape(6.dp),
+                            color = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.55f)
+                        ) {
+                            Text(
+                                text = term.partOfSpeech,
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onTertiaryContainer,
+                                fontWeight = FontWeight.Medium,
+                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                            )
+                        }
+
                         if (term.formula != null) {
                             Spacer(modifier = Modifier.width(6.dp))
                             Surface(

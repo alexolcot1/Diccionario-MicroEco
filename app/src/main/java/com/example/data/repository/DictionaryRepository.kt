@@ -35,4 +35,22 @@ class DictionaryRepository(private val dao: EcoTermDao) {
             dao.recordView(id, System.currentTimeMillis())
         }
     }
+
+    suspend fun addTerm(term: EcoTerm): Long {
+        return withContext(Dispatchers.IO) {
+            dao.insert(term)
+        }
+    }
+
+    suspend fun updateTerm(term: EcoTerm) {
+        withContext(Dispatchers.IO) {
+            dao.update(term)
+        }
+    }
+
+    suspend fun deleteTerm(term: EcoTerm) {
+        withContext(Dispatchers.IO) {
+            dao.delete(term)
+        }
+    }
 }

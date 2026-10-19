@@ -1,6 +1,7 @@
 package com.example.data.local
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -42,6 +43,9 @@ interface EcoTermDao {
     suspend fun getCount(): Int
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(term: EcoTerm): Long
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(terms: List<EcoTerm>)
 
     @Query("UPDATE eco_terms SET isFavorite = :isFavorite WHERE id = :id")
@@ -52,4 +56,10 @@ interface EcoTermDao {
 
     @Update
     suspend fun update(term: EcoTerm)
+
+    @Delete
+    suspend fun delete(term: EcoTerm)
+
+    @Query("DELETE FROM eco_terms WHERE id = :id")
+    suspend fun deleteById(id: Int)
 }
