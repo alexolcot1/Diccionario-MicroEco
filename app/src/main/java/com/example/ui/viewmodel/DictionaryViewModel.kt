@@ -1,6 +1,7 @@
 package com.example.ui.viewmodel
 
 import android.app.Application
+import android.content.Context
 import android.media.AudioAttributes
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
@@ -36,10 +37,22 @@ class DictionaryViewModel(application: Application) : AndroidViewModel(applicati
     private var tts: TextToSpeech? = null
     private val _isTtsReady = MutableStateFlow(false)
 
+    private val prefs = application.getSharedPreferences("microdiccionario_prefs", Context.MODE_PRIVATE)
+    private val KEY_TUTORIAL_SEEN = "has_seen_tutorial_v1"
+
+    private val _showTutorial = MutableStateFlow(false)
+    val showTutorial: StateFlow<Boolean> = _showTutorial.asStateFlow()
+
     init {
         val database = AppDatabase.getDatabase(application, viewModelScope)
         repository = DictionaryRepository(database.ecoTermDao())
         initializeNaturalTts(application)
+
+        // Automatically show tutorial only on first installation / launch
+        val hasSeenTutorial = prefs.getBoolean(KEY_TUTORIAL_SEEN, false)
+        if (!hasSeenTutorial) {
+            _showTutorial.value = true
+        }
     }
 
     private fun initializeNaturalTts(application: Application) {
@@ -328,6 +341,20 @@ class DictionaryViewModel(application: Application) : AndroidViewModel(applicati
 
     fun stopTts() {
         tts?.stop()
+    }
+
+    fun openTutorial() {
+        _showTutorial.value = true
+    }
+
+    fun completeTutorial() {
+        _showTutorial.value = false
+        prefs.edit().putBoolean(KEY_TUTORIAL_SEEN, true).apply()
+    }
+
+    fun dismissTutorial() {
+        _showTutorial.value = false
+        prefs.edit().putBoolean(KEY_TUTORIAL_SEEN, true).apply()
     }
 
     override fun onCleared() {

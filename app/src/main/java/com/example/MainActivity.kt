@@ -33,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.ui.components.AppTutorialDialog
 import com.example.ui.screens.AboutScreen
 import com.example.ui.screens.ExploreScreen
 import com.example.ui.screens.FavoritesScreen
@@ -72,6 +73,7 @@ fun DictionaryApp(viewModel: DictionaryViewModel) {
     val favoriteTerms by viewModel.favoriteTerms.collectAsStateWithLifecycle()
     val wordOfTheDay by viewModel.wordOfTheDay.collectAsStateWithLifecycle()
     val studyFilter by viewModel.studyFilter.collectAsStateWithLifecycle()
+    val showTutorial by viewModel.showTutorial.collectAsStateWithLifecycle()
 
     // Android Speech Recognition Launcher
     val speechLauncher = rememberLauncherForActivityResult(
@@ -246,10 +248,19 @@ fun DictionaryApp(viewModel: DictionaryViewModel) {
 
                 AppTab.ABOUT -> {
                     AboutScreen(
+                        onOpenTutorial = { viewModel.openTutorial() },
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
             }
         }
+    }
+
+    // App Onboarding Tutorial (Shows on first install / launch and on-demand from About screen)
+    if (showTutorial) {
+        AppTutorialDialog(
+            onDismiss = { viewModel.dismissTutorial() },
+            onComplete = { viewModel.completeTutorial() }
+        )
     }
 }

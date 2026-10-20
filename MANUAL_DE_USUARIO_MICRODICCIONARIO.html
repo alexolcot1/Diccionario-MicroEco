@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manual de Usuario - MicroDiccionario UMG</title>
+  <style>
+    :root {
+      --primary: #002B49;
+      --primary-light: #0A436D;
+      --secondary: #B38E32;
+      --secondary-light: #FBF4E4;
+      --bg-page: #F8FAFC;
+      --bg-card: #FFFFFF;
+      --text: #1E293B;
+      --text-muted: #64748B;
+      --border: #E2E8F0;
+      --success: #15803D;
+      --warning: #B45309;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-page);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 30px 15px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: var(--bg-card);
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+      padding: 48px;
+      border: 1px solid var(--border);
+    }
+
+    .header-banner {
+      text-align: center;
+      padding-bottom: 30px;
+      border-bottom: 2px solid var(--primary);
+      margin-bottom: 36px;
+    }
+
+    .logo {
+      width: 110px;
+      height: 110px;
+      object-fit: contain;
+      margin-bottom: 15px;
+    }
+
+    .institution {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .faculty {
+      font-size: 0.95rem;
+      color: var(--secondary);
+      font-style: italic;
+      margin-bottom: 12px;
+    }
+
+    .doc-title {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin-top: 10px;
+    }
+
+    .doc-subtitle {
+      font-size: 1.15rem;
+      color: var(--secondary);
+      font-weight: 600;
+    }
+
+    .meta-box {
+      background: var(--secondary-light);
+      border-left: 4px solid var(--secondary);
+      padding: 16px 20px;
+      border-radius: 8px;
+      margin: 24px 0 36px 0;
+      font-size: 0.95rem;
+    }
+
+    .btn-bar {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin: 20px 0 30px 0;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--primary-light); }
+    .btn-outline { background: transparent; border: 2px solid var(--primary); color: var(--primary); }
+
+    h2 {
+      font-size: 1.4rem;
+      color: var(--primary);
+      border-bottom: 2px solid #E2E8F0;
+      padding-bottom: 8px;
+      margin: 36px 0 16px 0;
+    }
+
+    h3 {
+      font-size: 1.1rem;
+      color: var(--secondary);
+      margin: 20px 0 10px 0;
+    }
+
+    p { margin-bottom: 14px; }
+
+    ul, ol {
+      margin-left: 24px;
+      margin-bottom: 18px;
+    }
+
+    li { margin-bottom: 8px; }
+    li strong { color: var(--primary); }
+
+    .callout {
+      background: #F1F5F9;
+      border-left: 4px solid var(--primary);
+      padding: 14px 18px;
+      border-radius: 6px;
+      margin: 18px 0;
+      font-size: 0.95rem;
+    }
+
+    .screen-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+      margin: 24px 0;
+    }
+
+    .mockup-card {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+      background: #FFFFFF;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    }
+
+    .mockup-card-header {
+      font-weight: 700;
+      color: var(--primary);
+      font-size: 1.05rem;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .mockup-card-body {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .step-badge {
+      display: inline-block;
+      background: var(--primary);
+      color: white;
+      font-weight: 700;
+      font-size: 0.8rem;
+      width: 24px;
+      height: 24px;
+      text-align: center;
+      line-height: 24px;
+      border-radius: 50%;
+      margin-right: 8px;
+    }
+
+    .drive-steps {
+      background: #EFF6FF;
+      border: 1px solid #BFDBFE;
+      border-radius: 12px;
+      padding: 24px;
+      margin: 28px 0;
+    }
+
+    .drive-steps h3 {
+      color: #1D4ED8;
+      margin-top: 0;
+    }
+
+    @media print {
+      body { background: white; padding: 0; }
+      .container { box-shadow: none; border: none; padding: 0; max-width: 100%; }
+      .btn-bar { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header-banner">
+    <img src="app/src/main/res/drawable/logo_umg.png" alt="Logo UMG" class="logo" onerror="this.style.display='none'">
+    <div class="institution">Universidad Mariano Gálvez de Guatemala</div>
+    <div class="faculty">Facultad de Ciencias Económicas • Cátedra de Microeconomía</div>
+    <h1 class="doc-title">MANUAL DE USUARIO OFICIAL</h1>
+    <div class="doc-subtitle">MicroDiccionario de Economía para Android</div>
+  </div>
+
+  <div class="btn-bar">
+    <button class="btn btn-primary" onclick="window.print()">🖨️ Imprimir / Guardar en PDF</button>
+  </div>
+
+  <div class="meta-box">
+    <strong>📋 Ficha Técnica:</strong><br>
+    • Versión: 1.0.0 Oficial (2026)<br>
+    • Base de Datos: 250 Conceptos Económicos Predefinidos<br>
+    • Plataforma: Android 8.0+ (Material Design 3)<br>
+    • Compatibilidad: Archivo .docx compatible nativamente con <strong>Google Drive y Google Docs</strong>.
+  </div>
+
+  <h2>1. INTRODUCCIÓN Y PROPÓSITO</h2>
+  <p><strong>MicroDiccionario</strong> es una herramienta didáctica integral concebida para estudiantes y docentes universitarios de la Universidad Mariano Gálvez de Guatemala. Su objetivo es proporcionar un acceso inmediato, confiable y científicamente estructurado a los fundamentos de la teoría económica y la microeconomía.</p>
+
+  <div class="screen-grid">
+    <div class="mockup-card">
+      <div class="mockup-card-header">🔍 Búsqueda Fluida</div>
+      <div class="mockup-card-body">Buscador instantáneo en vivo. El teclado se mantiene abierto mientras escribes cualquier letra, sin interrupciones.</div>
+    </div>
+    <div class="mockup-card">
+      <div class="mockup-card-header">🎙️ Búsqueda por Voz</div>
+      <div class="mockup-card-body">Dicta cualquier concepto económico usando el micrófono integrado para obtener resultados de inmediato.</div>
+    </div>
+    <div class="mockup-card">
+      <div class="mockup-card-header">🔊 Síntesis de Voz (TTS)</div>
+      <div class="mockup-card-body">Escucha la pronunciación y definición exacta de cada término en voz alta con un solo toque.</div>
+    </div>
+    <div class="mockup-card">
+      <div class="mockup-card-header">📇 Flashcards de Estudio</div>
+      <div class="mockup-card-body">Tarjetas interactivas volteables con sistema de autoevaluación ('Lo sé' / 'Repasar') para preparar exámenes.</div>
+    </div>
+  </div>
+
+  <h2>2. ESTRUCTURA Y NAVEGACIÓN</h2>
+  <p>La aplicación cuenta con una barra de navegación inferior fija para cambiar de sección rápidamente:</p>
+  <ul>
+    <li><strong>Inicio (Home):</strong> Búsqueda en vivo, Palabra del Día, acceso rápido y escudo institucional UMG.</li>
+    <li><strong>Explorar (Explore):</strong> Catálogo alfabético completo con botones de letras (A-Z) para filtrar los 250 términos.</li>
+    <li><strong>Flashcards (Estudio):</strong> Modo de entrenamiento interactivo para memorización activa.</li>
+    <li><strong>Favoritos (Favorites):</strong> Colección personalizada de conceptos marcados por el estudiante.</li>
+    <li><strong>Acerca de (About):</strong> Identidad académica, objetivos y créditos del proyecto de la UMG.</li>
+  </ul>
+
+  <h2>3. GUÍA PASO A PASO POR MÓDULOS</h2>
+
+  <h3>3.1 Módulo de Inicio y Buscador Rápido</h3>
+  <ol>
+    <li>Toca el campo de búsqueda en la parte superior.</li>
+    <li>Escribe cualquier término (ej. <em>"Costo"</em> o <em>"Elasticidad"</em>). La lista se actualiza instantáneamente sin cerrar el teclado.</li>
+    <li>Para usar reconocimiento de voz, pulsa el <strong>icono de micrófono</strong> y habla claro.</li>
+    <li>Para borrar la búsqueda y volver a la vista inicial, pulsa el botón <strong>(X)</strong>.</li>
+  </ol>
+
+  <h3>3.2 Tarjeta de la Palabra del Día</h3>
+  <p>En el Inicio se muestra diariamente un concepto económico aleatorio con su definición y un botón de audio directo para escuchar la pronunciación.</p>
+
+  <h3>3.3 Módulo Explorar (Glosario A-Z)</h3>
+  <p>Desplázate horizontalmente por los chips de letras (A, B, C...) para consultar únicamente los términos de una inicial específica. Cada tarjeta muestra la definición resumida y permite ingresar al detalle completo.</p>
+
+  <h3>3.4 Ficha Detallada de Concepto</h3>
+  <p>Al tocar cualquier término, se abre su pantalla completa donde puedes:</p>
+  <ul>
+    <li>Leer la definición teórica completa.</li>
+    <li>Revisar el <strong>ejemplo práctico</strong> de aplicación en el mercado real.</li>
+    <li>Pulsar el <strong>botón de audio</strong> para escuchar la lectura automática.</li>
+    <li>Tocar la <strong>estrella</strong> para añadirlo a tus Favoritos.</li>
+    <li>Copiar la definición al portapapeles para citarla en tus tareas.</li>
+  </ul>
+
+  <h3>3.5 Modo Flashcards de Estudio</h3>
+  <ol>
+    <li>Ingresa a la pestaña <strong>Flashcards</strong>.</li>
+    <li>Lee el término en el frente de la tarjeta y reflexiona su definición mentalmente.</li>
+    <li>Toca la tarjeta para <strong>girarla</strong> y corroborar la definición en el reverso.</li>
+    <li>Si la acertaste, pulsa <strong>"Lo sé" (Verde)</strong>; si necesitas reforzarla, pulsa <strong>"Repasar" (Ámbar)</strong>.</li>
+    <li>La barra de progreso superior indicará tu avance en la sesión de estudio.</li>
+  </ol>
+
+  <div class="drive-steps">
+    <h3>☁️ CÓMO GUARDAR Y ABRIR ESTE MANUAL EN GOOGLE DRIVE</h3>
+    <p>Para tener este manual en tu Google Drive y abrirlo como Google Docs:</p>
+    <p><span class="step-badge">1</span> Descarga el archivo <code>MANUAL_DE_USUARIO_MICRODICCIONARIO.docx</code> generado en la raíz del proyecto.</p>
+    <p><span class="step-badge">2</span> Abre tu navegador e ingresa a <strong>drive.google.com</strong> con tu cuenta de Google.</p>
+    <p><span class="step-badge">3</span> Arrastra el archivo <code>.docx</code> a tu unidad de Google Drive (o haz clic en <em>"+ Nuevo" &gt; "Subir archivo"</em>).</p>
+    <p><span class="step-badge">4</span> Haz doble clic sobre el archivo en tu Drive y selecciona <strong>"Abrir con Documentos de Google"</strong>. ¡Listo! Tendrás el documento completo, editable, con portadas y encabezados oficiales listo para compartir o imprimir.</p>
+  </div>
+
+  <h2>4. PREGUNTAS FRECUENTES (FAQ)</h2>
+  <div class="callout">
+    <strong>¿Por qué el buscador no me cierra el teclado al escribir?</strong><br>
+    Se implementó una corrección en Jetpack Compose para que la barra de búsqueda sea persistente y no se destruya al filtrar resultados. Así puedes escribir de forma continua.
+  </div>
+  <div class="callout">
+    <strong>¿Puedo usar la aplicación sin conexión a internet?</strong><br>
+    Sí. Todos los 250 conceptos económicos y el modo flashcards están almacenados localmente en la base de datos interna de la app.
+  </div>
+  <div class="callout">
+    <strong>¿Cómo activo la síntesis de voz si no se escucha?</strong><br>
+    Sube el volumen multimedia de tu teléfono Android y comprueba que en <em>Ajustes &gt; Accesibilidad / Sistema &gt; Texto a voz</em> tengas instalado el idioma Español.
+  </div>
+
+  <div style="text-align: center; margin-top: 40px; color: var(--text-muted); font-size: 0.85rem; border-top: 1px solid var(--border); padding-top: 20px;">
+    Universidad Mariano Gálvez de Guatemala • Facultad de Ciencias Económicas • MicroDiccionario v1.0
+  </div>
+</div>
+
+</body>
+</html>
