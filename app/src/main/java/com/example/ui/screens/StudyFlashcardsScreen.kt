@@ -28,10 +28,15 @@ import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.BookmarkBorder
 import androidx.compose.material.icons.filled.Calculate
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Lightbulb
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.RotateRight
+import androidx.compose.material.icons.filled.Shuffle
 import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -56,6 +61,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -85,14 +91,25 @@ fun StudyFlashcardsScreen(
     }
 
     var selectedFilter by remember(initialFilter) { mutableStateOf(initialFilter) }
-    var currentIndex by remember(selectedFilter) { mutableIntStateOf(0) }
-    var isFlipped by remember(selectedFilter) { mutableStateOf(false) }
+    var isRandomOrder by remember { mutableStateOf(true) } // Random by default as requested!
+    var shuffleSeed by remember { mutableIntStateOf(0) }
+    var currentIndex by remember(selectedFilter, isRandomOrder, shuffleSeed) { mutableIntStateOf(0) }
+    var isFlipped by remember(selectedFilter, currentIndex) { mutableStateOf(false) }
 
-    // Derive active terms based on filter - Defaults to ALL terms!
-    val activeTerms = remember(selectedFilter, allTerms, favoriteTerms) {
-        when (selectedFilter) {
+    // Track active study recall
+    var masteredTermIds by remember { mutableStateOf(setOf<Int>()) }
+    var needsReviewTermIds by remember { mutableStateOf(setOf<Int>()) }
+
+    // Derive active terms based on filter and randomization
+    val activeTerms = remember(selectedFilter, allTerms, favoriteTerms, isRandomOrder, shuffleSeed) {
+        val baseList = when (selectedFilter) {
             StudyFilterType.ALL -> allTerms
             StudyFilterType.FAVORITES -> favoriteTerms
+        }
+        if (isRandomOrder) {
+            baseList.shuffled()
+        } else {
+            baseList.sortedBy { it.term }
         }
     }
 
@@ -103,11 +120,18 @@ fun StudyFlashcardsScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(
-                        text = "Tarjetas de Repaso",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
-                    )
+                    Column {
+                        Text(
+                            text = "Tarjetas de Repaso",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = if (isRandomOrder) "Modo Aleatorio 🎲" else "Orden Alfabético 🔤",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
                 },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
@@ -118,6 +142,22 @@ fun StudyFlashcardsScreen(
                     }
                 },
                 actions = {
+                    // Quick reshuffle action button
+                    IconButton(
+                        onClick = {
+                            isRandomOrder = true
+                            shuffleSeed++
+                            currentIndex = 0
+                            isFlipped = false
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Shuffle,
+                            contentDescription = "Mezclar tarjetas aleatoriamente",
+                            tint = if (isRandomOrder) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline
+                        )
+                    }
+
                     if (activeTerms.isNotEmpty()) {
                         val safeIdx = currentIndex.coerceIn(0, activeTerms.size - 1)
                         val term = activeTerms[safeIdx]
@@ -125,7 +165,7 @@ fun StudyFlashcardsScreen(
                         IconButton(onClick = { onSpeakTerm(term) }) {
                             Icon(
                                 imageVector = Icons.Default.VolumeUp,
-                                contentDescription = "Escuchar",
+                                contentDescription = "Escuchar pronunciación",
                                 tint = MaterialTheme.colorScheme.primary
                             )
                         }
@@ -151,13 +191,14 @@ fun StudyFlashcardsScreen(
                 .padding(horizontal = 16.dp, vertical = 8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Horizontal Filter Chips (Allows studying All words, Favorites, or by Module)
+            // Filter and Order Mode Chips
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .horizontalScroll(rememberScrollState())
-                    .padding(bottom = 10.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    .padding(bottom = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 FilterChip(
                     selected = selectedFilter == StudyFilterType.ALL,
@@ -186,6 +227,24 @@ fun StudyFlashcardsScreen(
                         selectedLabelColor = MaterialTheme.colorScheme.onTertiary
                     )
                 )
+
+                // Toggle Random vs Alphabetical
+                FilterChip(
+                    selected = isRandomOrder,
+                    onClick = {
+                        isRandomOrder = !isRandomOrder
+                        currentIndex = 0
+                        isFlipped = false
+                    },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = if (isRandomOrder) Icons.Default.Shuffle else Icons.Default.Refresh,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    },
+                    label = { Text(if (isRandomOrder) "🎲 Aleatorio" else "🔤 Alfabético") }
+                )
             }
 
             if (activeTerms.isEmpty()) {
@@ -200,7 +259,7 @@ fun StudyFlashcardsScreen(
                             text = if (selectedFilter == StudyFilterType.FAVORITES)
                                 "No tienes palabras en favoritos para repasar."
                             else
-                                "No hay términos en este filtro.",
+                                "No hay términos disponibles para estudiar.",
                             style = MaterialTheme.typography.bodyLarge,
                             textAlign = TextAlign.Center,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -219,8 +278,10 @@ fun StudyFlashcardsScreen(
                 val safeIndex = currentIndex.coerceIn(0, activeTerms.size - 1)
                 val currentTerm = activeTerms[safeIndex]
                 val progress = (safeIndex + 1).toFloat() / activeTerms.size.toFloat()
+                val isMastered = masteredTermIds.contains(currentTerm.id)
+                val isNeedReview = needsReviewTermIds.contains(currentTerm.id)
 
-                // Progress row
+                // Progress row & Session tally
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -232,11 +293,37 @@ fun StudyFlashcardsScreen(
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary
                     )
-                    Text(
-                        text = currentTerm.category.ifBlank { "Microeconomía" },
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.outline
-                    )
+
+                    Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                        if (masteredTermIds.isNotEmpty()) {
+                            Surface(
+                                shape = RoundedCornerShape(10.dp),
+                                color = Color(0xFF2E7D32).copy(alpha = 0.15f)
+                            ) {
+                                Text(
+                                    text = "✓ ${masteredTermIds.size}",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color(0xFF2E7D32),
+                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                                )
+                            }
+                        }
+                        if (needsReviewTermIds.isNotEmpty()) {
+                            Surface(
+                                shape = RoundedCornerShape(10.dp),
+                                color = MaterialTheme.colorScheme.errorContainer
+                            ) {
+                                Text(
+                                    text = "↺ ${needsReviewTermIds.size}",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onErrorContainer,
+                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                                )
+                            }
+                        }
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(6.dp))
@@ -251,7 +338,7 @@ fun StudyFlashcardsScreen(
                     trackColor = MaterialTheme.colorScheme.surfaceVariant
                 )
 
-                Spacer(modifier = Modifier.height(14.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
                 // Flip Flashcard Container
                 Card(
@@ -290,14 +377,14 @@ fun StudyFlashcardsScreen(
                                     contentColor = MaterialTheme.colorScheme.onPrimary
                                 ) {
                                     Text(
-                                        text = currentTerm.category,
+                                        text = currentTerm.partOfSpeech.ifBlank { "Concepto" },
                                         style = MaterialTheme.typography.labelMedium,
                                         fontWeight = FontWeight.Bold,
                                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
                                     )
                                 }
 
-                                Spacer(modifier = Modifier.height(24.dp))
+                                Spacer(modifier = Modifier.height(20.dp))
 
                                 Text(
                                     text = currentTerm.term,
@@ -310,13 +397,13 @@ fun StudyFlashcardsScreen(
                                 Spacer(modifier = Modifier.height(14.dp))
 
                                 Text(
-                                    text = currentTerm.summary,
+                                    text = "¿Recuerdas qué significa este término económico?",
                                     style = MaterialTheme.typography.bodyMedium,
                                     textAlign = TextAlign.Center,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
 
-                                Spacer(modifier = Modifier.height(30.dp))
+                                Spacer(modifier = Modifier.height(26.dp))
 
                                 Row(
                                     verticalAlignment = Alignment.CenterVertically
@@ -329,7 +416,7 @@ fun StudyFlashcardsScreen(
                                     )
                                     Spacer(modifier = Modifier.width(8.dp))
                                     Text(
-                                        text = "Toca la tarjeta para ver respuesta",
+                                        text = "Toca para voltear y ver respuesta",
                                         style = MaterialTheme.typography.labelMedium,
                                         fontWeight = FontWeight.SemiBold,
                                         color = MaterialTheme.colorScheme.primary
@@ -337,13 +424,13 @@ fun StudyFlashcardsScreen(
                                 }
                             }
                         } else {
-                            // Back Side: Meaning, Example, Formula
+                            // Back Side: Meaning, Example, Formula, Self-Check
                             Column(
                                 modifier = Modifier
                                     .fillMaxSize()
                                     .verticalScroll(rememberScrollState())
                                     .padding(20.dp),
-                                verticalArrangement = Arrangement.spacedBy(14.dp)
+                                verticalArrangement = Arrangement.spacedBy(12.dp)
                             ) {
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
@@ -354,7 +441,8 @@ fun StudyFlashcardsScreen(
                                         text = currentTerm.term,
                                         style = MaterialTheme.typography.titleLarge,
                                         fontWeight = FontWeight.ExtraBold,
-                                        color = MaterialTheme.colorScheme.primary
+                                        color = MaterialTheme.colorScheme.primary,
+                                        modifier = Modifier.weight(1f)
                                     )
 
                                     Surface(
@@ -362,7 +450,7 @@ fun StudyFlashcardsScreen(
                                         color = MaterialTheme.colorScheme.secondaryContainer
                                     ) {
                                         Text(
-                                            text = "Significado",
+                                            text = "Definición",
                                             style = MaterialTheme.typography.labelSmall,
                                             fontWeight = FontWeight.Bold,
                                             color = MaterialTheme.colorScheme.onSecondaryContainer,
@@ -379,35 +467,37 @@ fun StudyFlashcardsScreen(
                                     color = MaterialTheme.colorScheme.onSurface
                                 )
 
-                                // Example
-                                Surface(
-                                    shape = RoundedCornerShape(12.dp),
-                                    color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.4f),
-                                    modifier = Modifier.fillMaxWidth()
-                                ) {
-                                    Column(modifier = Modifier.padding(12.dp)) {
-                                        Row(verticalAlignment = Alignment.CenterVertically) {
-                                            Icon(
-                                                imageVector = Icons.Default.Lightbulb,
-                                                contentDescription = null,
-                                                tint = MaterialTheme.colorScheme.secondary,
-                                                modifier = Modifier.size(16.dp)
-                                            )
-                                            Spacer(modifier = Modifier.width(6.dp))
+                                // Example (if meaningful)
+                                if (currentTerm.example.isNotBlank()) {
+                                    Surface(
+                                        shape = RoundedCornerShape(12.dp),
+                                        color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.4f),
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) {
+                                        Column(modifier = Modifier.padding(12.dp)) {
+                                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                                Icon(
+                                                    imageVector = Icons.Default.Lightbulb,
+                                                    contentDescription = null,
+                                                    tint = MaterialTheme.colorScheme.secondary,
+                                                    modifier = Modifier.size(16.dp)
+                                                )
+                                                Spacer(modifier = Modifier.width(6.dp))
+                                                Text(
+                                                    text = "Ejemplo Práctico",
+                                                    style = MaterialTheme.typography.labelMedium,
+                                                    fontWeight = FontWeight.Bold,
+                                                    color = MaterialTheme.colorScheme.secondary
+                                                )
+                                            }
+                                            Spacer(modifier = Modifier.height(6.dp))
                                             Text(
-                                                text = "Ejemplo Práctico",
-                                                style = MaterialTheme.typography.labelMedium,
-                                                fontWeight = FontWeight.Bold,
-                                                color = MaterialTheme.colorScheme.secondary
+                                                text = currentTerm.example,
+                                                style = MaterialTheme.typography.bodySmall,
+                                                lineHeight = 18.sp,
+                                                color = MaterialTheme.colorScheme.onSurface
                                             )
                                         }
-                                        Spacer(modifier = Modifier.height(6.dp))
-                                        Text(
-                                            text = currentTerm.example,
-                                            style = MaterialTheme.typography.bodySmall,
-                                            lineHeight = 18.sp,
-                                            color = MaterialTheme.colorScheme.onSurface
-                                        )
                                     }
                                 }
 
@@ -446,14 +536,80 @@ fun StudyFlashcardsScreen(
                                         }
                                     }
                                 }
+
+                                // Self-Assessment buttons for active recall
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    text = "¿Qué tal te fue con esta palabra?",
+                                    style = MaterialTheme.typography.labelMedium,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = MaterialTheme.colorScheme.outline,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    textAlign = TextAlign.Center
+                                )
+
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    OutlinedButton(
+                                        onClick = {
+                                            needsReviewTermIds = needsReviewTermIds + currentTerm.id
+                                            masteredTermIds = masteredTermIds - currentTerm.id
+                                            if (currentIndex < activeTerms.size - 1) {
+                                                currentIndex++
+                                                isFlipped = false
+                                            }
+                                        },
+                                        modifier = Modifier.weight(1f),
+                                        colors = ButtonDefaults.outlinedButtonColors(
+                                            contentColor = if (isNeedReview) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
+                                        ),
+                                        shape = RoundedCornerShape(12.dp)
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Close,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(16.dp),
+                                            tint = MaterialTheme.colorScheme.error
+                                        )
+                                        Spacer(modifier = Modifier.width(4.dp))
+                                        Text("Repasar")
+                                    }
+
+                                    Button(
+                                        onClick = {
+                                            masteredTermIds = masteredTermIds + currentTerm.id
+                                            needsReviewTermIds = needsReviewTermIds - currentTerm.id
+                                            if (currentIndex < activeTerms.size - 1) {
+                                                currentIndex++
+                                                isFlipped = false
+                                            }
+                                        },
+                                        modifier = Modifier.weight(1f),
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = Color(0xFF2E7D32)
+                                        ),
+                                        shape = RoundedCornerShape(12.dp)
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Check,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(16.dp),
+                                            tint = Color.White
+                                        )
+                                        Spacer(modifier = Modifier.width(4.dp))
+                                        Text("¡Me la sé!", color = Color.White)
+                                    }
+                                }
                             }
                         }
                     }
                 }
 
-                Spacer(modifier = Modifier.height(14.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
-                // Navigation Controls (Anterior / Siguiente)
+                // Navigation Controls (Anterior / Mezclar / Siguiente)
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -474,11 +630,29 @@ fun StudyFlashcardsScreen(
                             contentDescription = null,
                             modifier = Modifier.size(18.dp)
                         )
-                        Spacer(modifier = Modifier.width(6.dp))
+                        Spacer(modifier = Modifier.width(4.dp))
                         Text("Anterior")
                     }
 
-                    Spacer(modifier = Modifier.width(12.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    OutlinedButton(
+                        onClick = {
+                            isRandomOrder = true
+                            shuffleSeed++
+                            currentIndex = 0
+                            isFlipped = false
+                        },
+                        shape = RoundedCornerShape(14.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Shuffle,
+                            contentDescription = "Mezclar",
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.width(8.dp))
 
                     Button(
                         onClick = {
@@ -491,7 +665,7 @@ fun StudyFlashcardsScreen(
                         shape = RoundedCornerShape(14.dp)
                     ) {
                         Text("Siguiente")
-                        Spacer(modifier = Modifier.width(6.dp))
+                        Spacer(modifier = Modifier.width(4.dp))
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                             contentDescription = null,

@@ -49,19 +49,9 @@ fun AddTermDialog(
     var formulaText by remember { mutableStateOf("") }
     var synonymsText by remember { mutableStateOf("") }
     var antonymsText by remember { mutableStateOf("") }
-    var categoryText by remember { mutableStateOf("Conceptos Fundamentales") }
-    var selectedModule by remember { mutableStateOf("Módulo I: Introducción") }
-    var weekNumber by remember { mutableStateOf("1") }
-    var isModuleExpanded by remember { mutableStateOf(false) }
     var isPartOfSpeechExpanded by remember { mutableStateOf(false) }
 
     var showError by remember { mutableStateOf(false) }
-
-    val modules = listOf(
-        "Módulo I: Introducción",
-        "Módulo II: Tasas, Oferta y Demanda",
-        "Módulo III: Elasticidad y Mercado"
-    )
 
     val partsOfSpeech = listOf(
         "Sustantivo",
@@ -140,65 +130,6 @@ fun AddTermDialog(
                     }
                 }
 
-                // Module selector
-                ExposedDropdownMenuBox(
-                    expanded = isModuleExpanded,
-                    onExpandedChange = { isModuleExpanded = it },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    OutlinedTextField(
-                        value = selectedModule,
-                        onValueChange = {},
-                        readOnly = true,
-                        label = { Text("Módulo de la Guía") },
-                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isModuleExpanded) },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .menuAnchor()
-                    )
-                    ExposedDropdownMenu(
-                        expanded = isModuleExpanded,
-                        onDismissRequest = { isModuleExpanded = false }
-                    ) {
-                        modules.forEach { mod ->
-                            DropdownMenuItem(
-                                text = { Text(mod) },
-                                onClick = {
-                                    selectedModule = mod
-                                    isModuleExpanded = false
-                                }
-                            )
-                        }
-                    }
-                }
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    OutlinedTextField(
-                        value = categoryText,
-                        onValueChange = { categoryText = it },
-                        label = { Text("Categoría") },
-                        placeholder = { Text("Ej. Producción") },
-                        singleLine = true,
-                        modifier = Modifier.weight(1.5f)
-                    )
-
-                    OutlinedTextField(
-                        value = weekNumber,
-                        onValueChange = {
-                            if (it.all { char -> char.isDigit() } && it.length <= 2) {
-                                weekNumber = it
-                            }
-                        },
-                        label = { Text("Semana") },
-                        placeholder = { Text("1-17") },
-                        singleLine = true,
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-
                 OutlinedTextField(
                     value = meaningText,
                     onValueChange = { meaningText = it },
@@ -264,17 +195,18 @@ fun AddTermDialog(
                     if (termText.isBlank() || meaningText.isBlank()) {
                         showError = true
                     } else {
+                        val initialChar = termText.trim().firstOrNull()?.uppercaseChar() ?: 'A'
                         val newTerm = EcoTerm(
                             term = termText.trim(),
-                            partOfSpeech = if (partOfSpeechText.isBlank()) "Sustantivo" else partOfSpeechText.trim(),
+                            partOfSpeech = if (partOfSpeechText.isBlank()) "Término económico" else partOfSpeechText.trim(),
                             summary = if (meaningText.length > 90) meaningText.take(87) + "..." else meaningText.trim(),
                             meaning = meaningText.trim(),
-                            example = if (exampleText.isBlank()) "Aplicación práctica según la teoría microeconómica." else exampleText.trim(),
+                            example = if (exampleText.isBlank()) "Aplicación práctica en el mercado al analizar ${termText.trim().lowercase()}." else exampleText.trim(),
                             formula = if (formulaText.isBlank()) null else formulaText.trim(),
-                            module = selectedModule,
-                            week = weekNumber.toIntOrNull() ?: 1,
-                            category = if (categoryText.isBlank()) "General" else categoryText.trim(),
-                            bibliography = "Aporte de usuario UMG",
+                            module = "Glosario General",
+                            week = 0,
+                            category = "Letra $initialChar",
+                            bibliography = "Guía Didáctica UMG • Microeconomía",
                             synonyms = if (synonymsText.isBlank()) null else synonymsText.trim(),
                             antonyms = if (antonymsText.isBlank()) null else antonymsText.trim()
                         )

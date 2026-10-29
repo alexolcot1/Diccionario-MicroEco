@@ -195,20 +195,59 @@ class DictionaryViewModel(application: Application) : AndroidViewModel(applicati
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
 
-    // Filtered terms based on search query
+    // Filtered terms based on search query with smart prefix-first search
     val filteredTerms: StateFlow<List<EcoTerm>> = combine(
         allTerms,
         _searchQuery
     ) { terms, query ->
-        if (query.isBlank()) {
-            terms
-        } else {
+        val trimmed = query.trim()
+        if (trimmed.isEmpty()) {
+            terms.sortedBy { it.term.lowercase(Locale.ROOT) }
+        } else if (trimmed.length == 1) {
+            // When a single letter is entered: ONLY return terms starting with that letter
             terms.filter { term ->
-                term.term.contains(query, ignoreCase = true) ||
-                term.summary.contains(query, ignoreCase = true) ||
-                term.meaning.contains(query, ignoreCase = true) ||
-                term.category.contains(query, ignoreCase = true)
+                term.term.trim().startsWith(trimmed, ignoreCase = true)
+            }.sortedBy { it.term.lowercase(Locale.ROOT) }
+        } else {
+            // As user types:
+            // 1. Terms whose name starts with the query (e.g. "Cost" -> "Costo", "Costo marginal")
+            // 2. Terms where any word in the name starts with the query (e.g. "marginal" -> "Costo marginal")
+            // 3. Terms whose name contains the query anywhere
+            val exactPrefixMatches = mutableListOf<EcoTerm>()
+            val wordPrefixMatches = mutableListOf<EcoTerm>()
+            val containsMatches = mutableListOf<EcoTerm>()
+            val seenIds = mutableSetOf<Int>()
+
+            for (term in terms) {
+                val name = term.term.trim()
+                if (name.startsWith(trimmed, ignoreCase = true)) {
+                    exactPrefixMatches.add(term)
+                    seenIds.add(term.id)
+                }
             }
+
+            for (term in terms) {
+                if (term.id !in seenIds) {
+                    val words = term.term.trim().split("\\s+".toRegex())
+                    if (words.any { it.startsWith(trimmed, ignoreCase = true) }) {
+                        wordPrefixMatches.add(term)
+                        seenIds.add(term.id)
+                    }
+                }
+            }
+
+            for (term in terms) {
+                if (term.id !in seenIds) {
+                    if (term.term.contains(trimmed, ignoreCase = true)) {
+                        containsMatches.add(term)
+                        seenIds.add(term.id)
+                    }
+                }
+            }
+
+            exactPrefixMatches.sortedBy { it.term.lowercase(Locale.ROOT) } +
+            wordPrefixMatches.sortedBy { it.term.lowercase(Locale.ROOT) } +
+            containsMatches.sortedBy { it.term.lowercase(Locale.ROOT) }
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
